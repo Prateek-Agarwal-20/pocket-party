@@ -43,7 +43,7 @@
             <size android:width="200dp"
                   android:height="200dp"/>
             <corners android:radius="300dp"/>
-            <solid android:color="@color/colorPrimary"/>
+            <solid android:color="@color/colorPrimaryDark"/>
             <padding android:bottom="10dp"
                      android:top="10dp"
                      android:left="10dp"

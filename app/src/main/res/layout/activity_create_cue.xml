@@ -5,7 +5,8 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".CreateCueActivity">
+        tools:context=".CreateCueActivity"
+        android:background="#000000">
 
     <Button
             android:id="@+id/btnFlash"
@@ -27,6 +28,8 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@id/btnPlay"
+            android:outlineSpotShadowColor="@color/colorAccent"
+            android:background="#272626"
             android:layout_margin="10dp"
     />
 
@@ -40,12 +43,12 @@
             app:layout_constraintRight_toRightOf="parent"/>
 
     <Button
-        android:id="@+id/btnBack" android:layout_width="35dp" android:layout_height="35dp"
-        android:background="@drawable/playbutton_circle"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/btnPlay"
-        app:layout_constraintRight_toLeftOf="@id/btnPlay"
-        app:layout_constraintTop_toTopOf="@id/btnPlay"/>
+            android:id="@+id/btnBack" android:layout_width="35dp" android:layout_height="35dp"
+            android:background="@drawable/playbutton_circle"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/btnPlay"
+            app:layout_constraintRight_toLeftOf="@id/btnPlay"
+            app:layout_constraintTop_toTopOf="@id/btnPlay"/>
 
     <Button
             android:id="@+id/btnFwd" android:layout_width="35dp" android:layout_height="35dp"
