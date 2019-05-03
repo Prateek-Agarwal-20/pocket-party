@@ -17,7 +17,7 @@ import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp
 import com.spotify.android.appremote.api.error.NotLoggedInException
-
+import kotlinx.android.synthetic.main.content_main.*
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -31,44 +31,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { _ ->
-
-            // Set the connection parameters
-            val connectionParams = ConnectionParams.Builder(CLIENT_ID)
-                .setRedirectUri(REDIRECT_URI)
-                .showAuthView(true)
-                .build()
-
-            SpotifyAppRemote.connect(this, connectionParams,
-                object : Connector.ConnectionListener {
-
-                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                        mSpotifyAppRemote = spotifyAppRemote
-                        Log.d("MainActivity", "Connected! Yay!")
-
-                        // Now you can start interacting with App Remote
-                        connected()
-                    }
-
-                    override fun onFailure(error: Throwable) {
-                        if(error is CouldNotFindSpotifyApp){
-                            Log.d("Login Error", "no spotify app")
-                            Snackbar.make(
-                                drawer_layout, "Please download Spotify to proceed", Snackbar.LENGTH_LONG
-                            ).show()
-                        }
-                        if(error is NotLoggedInException) {
-                            Log.d("Login Error", "user is not logged in")
-                            Snackbar.make(
-                                drawer_layout, "Please login to Spotify to proceed", Snackbar.LENGTH_LONG
-                            ).show()
-                        }
-                        Log.d("MAIN_ACTIVITY", error.message, error)
-                    }
-                })
-
-
-
+        loginBtn.setOnClickListener {
+            connectToSpotify()
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -80,15 +44,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
     }
 
-    override fun onStart() {
-        super.onStart()
-
-
-    }
-
     private fun connected() {
-        // Play a playlist
-        mSpotifyAppRemote!!.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
+        // This runs once you've successfully authenticated with Spotify
     }
 
     override fun onStop() {
@@ -145,5 +102,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun connectToSpotify() {
+        // Set the connection parameters
+        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
+            .setRedirectUri(REDIRECT_URI)
+            .showAuthView(true)
+            .build()
+
+        SpotifyAppRemote.connect(this, connectionParams,
+            object : Connector.ConnectionListener {
+
+                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                    mSpotifyAppRemote = spotifyAppRemote
+                    Log.d("MainActivity", "Connected! Yay!")
+
+                    Snackbar.make(
+                        drawer_layout, "Successfully logged in!", Snackbar.LENGTH_SHORT
+                    ).show()
+
+                    // Now you can start interacting with App Remote
+                    connected()
+                }
+
+                override fun onFailure(error: Throwable) {
+                    if(error is CouldNotFindSpotifyApp){
+                        Log.d("Login Error", "no spotify app")
+                        Snackbar.make(
+                            drawer_layout, "Please download Spotify to proceed", Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    if(error is NotLoggedInException) {
+                        Log.d("Login Error", "user is not logged in")
+                        Snackbar.make(
+                            drawer_layout, "Please login to Spotify to proceed", Snackbar.LENGTH_LONG
+                        ).show()
+                    }
+                    Log.d("MAIN_ACTIVITY", error.message, error)
+                }
+            })
     }
 }
