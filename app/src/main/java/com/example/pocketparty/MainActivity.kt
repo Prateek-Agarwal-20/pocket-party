@@ -6,21 +6,69 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
+import com.spotify.android.appremote.api.ConnectionParams;
+import com.spotify.android.appremote.api.Connector;
+import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp
+import com.spotify.android.appremote.api.error.NotLoggedInException
+
+
+
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private val CLIENT_ID = "30c672e2985240cbbfaee0eedccfb14b"
+    private val REDIRECT_URI = "pocket-party://spotify-login"
+    private var mSpotifyAppRemote: SpotifyAppRemote? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+        fab.setOnClickListener { _ ->
+
+            // Set the connection parameters
+            val connectionParams = ConnectionParams.Builder(CLIENT_ID)
+                .setRedirectUri(REDIRECT_URI)
+                .showAuthView(true)
+                .build()
+
+            SpotifyAppRemote.connect(this, connectionParams,
+                object : Connector.ConnectionListener {
+
+                    override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
+                        mSpotifyAppRemote = spotifyAppRemote
+                        Log.d("MainActivity", "Connected! Yay!")
+
+                        // Now you can start interacting with App Remote
+                        connected()
+                    }
+
+                    override fun onFailure(error: Throwable) {
+                        if(error is CouldNotFindSpotifyApp){
+                            Log.d("Login Error", "no spotify app")
+                            Snackbar.make(
+                                drawer_layout, "Please download Spotify to proceed", Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                        if(error is NotLoggedInException) {
+                            Log.d("Login Error", "user is not logged in")
+                            Snackbar.make(
+                                drawer_layout, "Please login to Spotify to proceed", Snackbar.LENGTH_LONG
+                            ).show()
+                        }
+                        Log.d("MAIN_ACTIVITY", error.message, error)
+                    }
+                })
+
+
+
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -30,6 +78,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+
+    }
+
+    private fun connected() {
+        // Play a playlist
+        mSpotifyAppRemote!!.getPlayerApi().play("spotify:playlist:37i9dQZF1DX2sUQwD7tbmL");
+    }
+
+    override fun onStop() {
+        super.onStop();
+        SpotifyAppRemote.disconnect(mSpotifyAppRemote);
     }
 
     override fun onBackPressed() {
