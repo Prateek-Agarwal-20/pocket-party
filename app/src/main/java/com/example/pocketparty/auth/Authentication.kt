@@ -83,6 +83,7 @@ object Authentication {
                     Snackbar.make(mainActivity.drawer_layout, "Welcome back " + auth.uid + "!", Snackbar.LENGTH_LONG).show()
                 }
 
+                Log.d("FIREBASE_SIGN_IN", "successfully signed in user " + auth.uid)
                 val user = auth.currentUser
             } else {
                 // If sign in fails, display a message to the user.
