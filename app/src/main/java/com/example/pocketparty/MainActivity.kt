@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import com.google.firebase.auth.FirebaseAuth
+import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -112,4 +113,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     fun setSpotifyAppRemote(spotifyAppRemote: SpotifyAppRemote) {
         mSpotifyAppRemote = spotifyAppRemote
     }
+
+
+    //OnClick to test createcue page
+    fun gotoCreateCue(view: View){
+        startActivity(Intent(this@MainActivity, CreateCueActivity::class.java))
+    }
+
 }

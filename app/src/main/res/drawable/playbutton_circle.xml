@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:state_enabled="true">
+        <shape android:shape="oval">
+            <corners android:radius="300dp"/>
+            <solid android:color="@color/colorPrimary"/>
+            <padding android:bottom="10dp"
+                     android:top="10dp"
+                     android:left="10dp"
+                     android:right="10dp"/>
+        </shape>
+        <bitmap android:src="@drawable/ic_play_arrow"/>
+    </item>
+
+    <item android:state_enabled="false">
+        <shape android:shape="oval">
+            <corners android:radius="300dp"/>
+            <solid android:color="@color/colorPrimary"/>
+            <padding android:bottom="10dp"
+                     android:top="10dp"
+                     android:left="10dp"
+                     android:right="10dp"/>
+        </shape>
+        <bitmap android:src="@drawable/ic_pause_button"/>
+    </item>
+
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <size android:width="100dp"
+                  android:height="100dp"/>
+            <corners android:radius="300dp"/>
+            <solid android:color="@color/colorPrimary"/>
+            <padding android:bottom="10dp"
+                     android:top="10dp"
+                     android:left="10dp"
+                     android:right="10dp"/>
+        </shape>
+    </item>
+
+    <item android:state_pressed="false">
+        <shape android:shape="oval">
+            <size android:width="200dp"
+                  android:height="200dp"/>
+            <corners android:radius="300dp"/>
+            <solid android:color="@color/colorPrimaryDark"/>
+            <padding android:bottom="10dp"
+                     android:top="10dp"
+                     android:left="10dp"
+                     android:right="10dp"/>
+        </shape>
+    </item>
+
+</selector>
