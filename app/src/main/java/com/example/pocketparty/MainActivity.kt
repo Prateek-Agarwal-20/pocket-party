@@ -1,30 +1,27 @@
 package com.example.pocketparty
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
-import com.spotify.android.appremote.api.ConnectionParams;
-import com.spotify.android.appremote.api.Connector;
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import com.spotify.android.appremote.api.error.CouldNotFindSpotifyApp
-import com.spotify.android.appremote.api.error.NotLoggedInException
 import kotlinx.android.synthetic.main.content_main.*
-
+import com.google.firebase.FirebaseApp
+import com.example.pocketparty.auth.Authentication
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    private val CLIENT_ID = "30c672e2985240cbbfaee0eedccfb14b"
-    private val REDIRECT_URI = "pocket-party://spotify-login"
+    val AUTH_REQUEST_CODE = 1337
     private var mSpotifyAppRemote: SpotifyAppRemote? = null
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +29,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         loginBtn.setOnClickListener {
-            connectToSpotify()
+            Authentication.connectToSpotify(this)
         }
 
         val toggle = ActionBarDrawerToggle(
@@ -42,10 +39,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
-    }
 
-    private fun connected() {
-        // This runs once you've successfully authenticated with Spotify
+        auth = FirebaseAuth.getInstance()
+        FirebaseApp.initializeApp(this)
     }
 
     override fun onStop() {
@@ -104,43 +100,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    private fun connectToSpotify() {
-        // Set the connection parameters
-        val connectionParams = ConnectionParams.Builder(CLIENT_ID)
-            .setRedirectUri(REDIRECT_URI)
-            .showAuthView(true)
-            .build()
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
+        super.onActivityResult(requestCode, resultCode, intent)
 
-        SpotifyAppRemote.connect(this, connectionParams,
-            object : Connector.ConnectionListener {
+        // Check if result comes from the spotify login activity
+        if (requestCode == AUTH_REQUEST_CODE) {
+            Authentication.loginWithSpotify(this, resultCode, intent, drawer_layout)
+        }
+    }
 
-                override fun onConnected(spotifyAppRemote: SpotifyAppRemote) {
-                    mSpotifyAppRemote = spotifyAppRemote
-                    Log.d("MainActivity", "Connected! Yay!")
-
-                    Snackbar.make(
-                        drawer_layout, "Successfully logged in!", Snackbar.LENGTH_SHORT
-                    ).show()
-
-                    // Now you can start interacting with App Remote
-                    connected()
-                }
-
-                override fun onFailure(error: Throwable) {
-                    if(error is CouldNotFindSpotifyApp){
-                        Log.d("Login Error", "no spotify app")
-                        Snackbar.make(
-                            drawer_layout, "Please download Spotify to proceed", Snackbar.LENGTH_LONG
-                        ).show()
-                    }
-                    if(error is NotLoggedInException) {
-                        Log.d("Login Error", "user is not logged in")
-                        Snackbar.make(
-                            drawer_layout, "Please login to Spotify to proceed", Snackbar.LENGTH_LONG
-                        ).show()
-                    }
-                    Log.d("MAIN_ACTIVITY", error.message, error)
-                }
-            })
+    fun setSpotifyAppRemote(spotifyAppRemote: SpotifyAppRemote) {
+        mSpotifyAppRemote = spotifyAppRemote
     }
 }
