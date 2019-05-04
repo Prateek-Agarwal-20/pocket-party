@@ -6,6 +6,8 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="com_spotify_sdk_redirect_scheme">pocket-party</string>
+    <string name="com_spotify_sdk_redirect_host">spotify-login</string>
     <string name="flash">Flash</string>
     <string name="create_cue">Create Cue</string>
 </resources>
