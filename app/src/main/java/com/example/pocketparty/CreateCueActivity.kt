@@ -10,6 +10,7 @@ import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.SeekBar
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_create_cue.*
 import java.util.*
@@ -28,7 +29,7 @@ class CreateCueActivity : AppCompatActivity() {
         setup()
     }
 
-    private fun setup(){
+    private fun setup() {
         setUpFlashParams()
         setupFlashOntouch()
         mpWillyWonka = MediaPlayer.create(this, R.raw.willywonkaremix)
@@ -41,24 +42,40 @@ class CreateCueActivity : AppCompatActivity() {
         camId = cameraManager.cameraIdList[0]
     }
 
-    fun setupFlashOntouch(){
+    fun setupFlashOntouch() {
         btnFlash.setOnTouchListener { v, event ->
             flashLightClick(event)
             true
         }
     }
 
-    fun setupProgressBar(){
+    fun setupProgressBar() {
         val duration = mpWillyWonka.duration
         sbSongSeek.max = duration
-        updateAmount = duration/100
+        updateAmount = duration / 100
         val musicTimer = Timer()
-        musicTimer.scheduleAtFixedRate(musicTimerTask(), 0, 1000)
-        Toast.makeText(this, "after Scheduled line", Toast.LENGTH_SHORT).show()
+        musicTimer.scheduleAtFixedRate(musicTimerTask(), 0, updateAmount.toLong())
+        setSeekListener()
     }
 
+    private fun setSeekListener() {
+        sbSongSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+            }
 
-    fun flashLightClick(event: MotionEvent){
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                mpWillyWonka.pause()
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                mpWillyWonka.seekTo(sbSongSeek.progress)
+                mpWillyWonka.start()
+            }
+
+        })
+    }
+
+    fun flashLightClick(event: MotionEvent) {
         if (event.action == MotionEvent.ACTION_DOWN) {
             try {
                 cameraManager.setTorchMode(camId, true)
@@ -78,23 +95,31 @@ class CreateCueActivity : AppCompatActivity() {
         }
     }
 
-    fun playButtonClick(view: View){
-        if(mpWillyWonka.isPlaying){
+    fun playButtonClick(view: View) {
+        if (mpWillyWonka.isPlaying) {
             mpWillyWonka.pause()
             btnPlay.isSelected = false
-        } else{
+        } else {
             mpWillyWonka.start()
             btnPlay.isSelected = true
         }
     }
 
-    inner class musicTimerTask: TimerTask(){
+    fun leftSeekClick(view: View){
+        sbSongSeek.setProgress(0)
+        mpWillyWonka.seekTo(0)
+    }
+
+    fun rightSeekClick(view: View){
+        sbSongSeek.setProgress(sbSongSeek.max)
+        mpWillyWonka.seekTo(sbSongSeek.max)
+    }
+
+    inner class musicTimerTask : TimerTask() {
         override fun run() {
             runOnUiThread {
-//                Log.i("TAG", "running")
-                if(mpWillyWonka.isPlaying && updateAmount * sbSongSeek.progress < sbSongSeek.max){
-                    sbSongSeek.progress += 1
-//                    Log.i("TAG", "in loop")
+                if (mpWillyWonka.isPlaying && sbSongSeek.progress < sbSongSeek.max) {
+                    sbSongSeek.progress += updateAmount
                 }
             }
         }
