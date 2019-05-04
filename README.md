@@ -8,5 +8,10 @@ Once you have the file, if you are using a mac, run the following in your termin
 
 `export GOOGLE_APPLICATION_CREDENTIALS=<path-to-service-acount-json-file>`
 
-This will last as long as your session lasts. If you start a new session, make sure to re run this terminal command.
+To check if it worked, run:
+
+`echo $GOOGLE_APPLICATION_CREDENTIALS`
+
+This should display the filepath you just exported. This environment variable will last as long as your session lasts. If you start a new session, make sure to re run this terminal command.
+
 
