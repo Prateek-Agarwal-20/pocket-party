@@ -22,6 +22,10 @@ android {
     }
 }
 
+androidExtensions {
+    experimental = true
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -34,8 +38,4 @@ dependencies {
 
     implementation project(':spotify-app-remote')
     implementation "com.google.code.gson:gson:2.8.5"
-
-    //Parceler
-    implementation 'org.parceler:parceler-api:1.1.12'
-    annotationProcessor 'org.parceler:parceler:1.1.12'
 }

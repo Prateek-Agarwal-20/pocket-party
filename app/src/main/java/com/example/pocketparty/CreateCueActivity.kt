@@ -7,8 +7,6 @@ import android.hardware.camera2.CameraManager
 import android.media.MediaPlayer
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Parcelable
-import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -16,11 +14,13 @@ import android.widget.SeekBar
 import android.widget.Toast
 import com.example.pocketparty.data.LightingCueItem
 import kotlinx.android.synthetic.main.activity_create_cue.*
-import org.parceler.Parcel
 import java.util.*
 
-@Parcel
 class CreateCueActivity : AppCompatActivity() {
+
+    companion object {
+        val LISTKEY = "LISTKEY"
+    }
 
     private lateinit var cameraManager: CameraManager
     private lateinit var camId: String
@@ -135,7 +135,6 @@ class CreateCueActivity : AppCompatActivity() {
         mpWillyWonka.seekTo(sbSongSeek.max)
     }
 
-    @Parcel
     inner class musicTimerTask : TimerTask() {
         override fun run() {
             runOnUiThread {
@@ -144,9 +143,9 @@ class CreateCueActivity : AppCompatActivity() {
                 } else if(sbSongSeek.progress == sbSongSeek.max){
                     val playIntent = Intent(this@CreateCueActivity, PlayProjectActivity::class.java)
 
-                    startActivity(playIntent)
-//                    javaplayIntent.putParcelableArrayListExtra("cueList", lightingCues)
+                    playIntent.putParcelableArrayListExtra(LISTKEY, lightingCues)
 
+                    startActivity(playIntent)
                 }
             }
         }
@@ -156,5 +155,6 @@ class CreateCueActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         musicTimer.cancel()
+        mpWillyWonka.stop()
     }
 }

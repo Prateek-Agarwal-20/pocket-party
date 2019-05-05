@@ -1,7 +1,7 @@
 package com.example.pocketparty.data
 
-import org.parceler.Parcel
-import java.io.Serializable
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
-@Parcel
-data class LightingCueItem(var startTime: Int, var endTime: Int): Serializable
+@Parcelize
+data class LightingCueItem(var startTime: Int, var endTime: Int): Parcelable
