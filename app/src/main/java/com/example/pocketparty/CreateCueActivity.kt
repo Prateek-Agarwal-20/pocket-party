@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
@@ -39,8 +40,20 @@ class CreateCueActivity : AppCompatActivity() {
     }
 
     private fun doAnims(){
+        val flashButtonAnim = AnimationUtils.loadAnimation(this@CreateCueActivity, R.anim.flashbutton_anim_create)
+        btnFlash.startAnimation(flashButtonAnim)
+
         val seekBarAnim = AnimationUtils.loadAnimation(this@CreateCueActivity, R.anim.seekbar_anim_create)
         sbSongSeek.startAnimation(seekBarAnim)
+
+        val leftSeekAnim = AnimationUtils.loadAnimation(this@CreateCueActivity, R.anim.leftseek_anim_create)
+        btnBack.startAnimation(leftSeekAnim)
+
+        val rightSeekAnim = AnimationUtils.loadAnimation(this@CreateCueActivity, R.anim.rightseek_anim_create)
+        btnFwd.startAnimation(rightSeekAnim)
+
+        val playButtonAnim = AnimationUtils.loadAnimation(this@CreateCueActivity, R.anim.playbutton_anim_create)
+        btnPlay.startAnimation(playButtonAnim)
     }
 
     private fun setup() {

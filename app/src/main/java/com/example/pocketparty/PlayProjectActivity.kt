@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
 import com.example.pocketparty.data.LightingCueItem
@@ -34,7 +36,22 @@ class PlayProjectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_project)
 
+        doAnims()
         setup()
+    }
+
+    private fun doAnims(){
+        val seekBarAnim = AnimationUtils.loadAnimation(this@PlayProjectActivity, R.anim.seekbar_anim_create)
+        sbProjectSeek.startAnimation(seekBarAnim)
+
+        val leftSeekAnim = AnimationUtils.loadAnimation(this@PlayProjectActivity, R.anim.leftseek_anim_create)
+        btnProjectLeftSeek.startAnimation(leftSeekAnim)
+
+        val rightSeekAnim = AnimationUtils.loadAnimation(this@PlayProjectActivity, R.anim.rightseek_anim_create)
+        btnProjectRightSeek.startAnimation(rightSeekAnim)
+
+        val playProjectAnim = AnimationUtils.loadAnimation(this@PlayProjectActivity, R.anim.flashbutton_anim_create)
+        btnProjectPlay.startAnimation(playProjectAnim)
     }
 
     inner class playThread : Thread() {
