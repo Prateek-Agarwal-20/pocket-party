@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
 import com.example.pocketparty.data.LightingCueItem
@@ -33,7 +34,13 @@ class CreateCueActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_cue)
 
+        doAnims()
         setup()
+    }
+
+    private fun doAnims(){
+        val seekBarAnim = AnimationUtils.loadAnimation(this@CreateCueActivity, R.anim.seekbar_anim_create)
+        sbSongSeek.startAnimation(seekBarAnim)
     }
 
     private fun setup() {
