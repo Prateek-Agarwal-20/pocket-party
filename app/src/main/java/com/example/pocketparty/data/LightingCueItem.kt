@@ -1,3 +1,7 @@
 package com.example.pocketparty.data
 
-data class LightingCueItem(val startTime: Float, val endTime: Float)
+import org.parceler.Parcel
+import java.io.Serializable
+
+@Parcel
+data class LightingCueItem(var startTime: Int, var endTime: Int): Serializable

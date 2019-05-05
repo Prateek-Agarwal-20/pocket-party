@@ -1,26 +1,33 @@
 package com.example.pocketparty
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.camera2.CameraAccessException
 import android.hardware.camera2.CameraManager
 import android.media.MediaPlayer
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.SeekBar
 import android.widget.Toast
+import com.example.pocketparty.data.LightingCueItem
 import kotlinx.android.synthetic.main.activity_create_cue.*
+import org.parceler.Parcel
 import java.util.*
 
+@Parcel
 class CreateCueActivity : AppCompatActivity() {
 
     private lateinit var cameraManager: CameraManager
     private lateinit var camId: String
     private lateinit var mpWillyWonka: MediaPlayer
     private var updateAmount = 0
+    private val lightingCues = ArrayList<LightingCueItem>()
+    private val musicTimer = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +60,6 @@ class CreateCueActivity : AppCompatActivity() {
         val duration = mpWillyWonka.duration
         sbSongSeek.max = duration
         updateAmount = duration / 100
-        val musicTimer = Timer()
         musicTimer.scheduleAtFixedRate(musicTimerTask(), 0, updateAmount.toLong())
         setSeekListener()
     }
@@ -65,11 +71,17 @@ class CreateCueActivity : AppCompatActivity() {
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
                 mpWillyWonka.pause()
+//                btnPlay.isSelected = false
+                btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
+                btnFlash.isEnabled = false
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 mpWillyWonka.seekTo(sbSongSeek.progress)
                 mpWillyWonka.start()
+//                btnPlay.isSelected = true
+                btnPlay.setImageResource(R.drawable.ic_pause)
+                btnFlash.isEnabled = true
             }
 
         })
@@ -79,6 +91,9 @@ class CreateCueActivity : AppCompatActivity() {
         if (event.action == MotionEvent.ACTION_DOWN) {
             try {
                 cameraManager.setTorchMode(camId, true)
+                btnFlash.isPressed = true
+                lightingCues.add(LightingCueItem(mpWillyWonka.currentPosition, 0))
+                sbSongSeek.isEnabled = false
             } catch (e: CameraAccessException) {
                 runOnUiThread {
                     Toast.makeText(applicationContext, "DAMNIT it wont turn ON", Toast.LENGTH_LONG).show()
@@ -87,6 +102,9 @@ class CreateCueActivity : AppCompatActivity() {
         } else if (event.action == MotionEvent.ACTION_UP) {
             try {
                 cameraManager.setTorchMode(camId, false)
+                btnFlash.isPressed = false
+                lightingCues.get(lightingCues.size-1).endTime = mpWillyWonka.currentPosition
+                sbSongSeek.isEnabled = true
             } catch (e: CameraAccessException) {
                 runOnUiThread {
                     Toast.makeText(applicationContext, "DAMNIT it wont turn OFF", Toast.LENGTH_LONG).show()
@@ -98,10 +116,12 @@ class CreateCueActivity : AppCompatActivity() {
     fun playButtonClick(view: View) {
         if (mpWillyWonka.isPlaying) {
             mpWillyWonka.pause()
-            btnPlay.isSelected = false
+//          btnPlay.isSelected = false
+            btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
         } else {
             mpWillyWonka.start()
-            btnPlay.isSelected = true
+//            btnPlay.isSelected = true
+            btnPlay.setImageResource(R.drawable.ic_pause)
         }
     }
 
@@ -115,14 +135,26 @@ class CreateCueActivity : AppCompatActivity() {
         mpWillyWonka.seekTo(sbSongSeek.max)
     }
 
+    @Parcel
     inner class musicTimerTask : TimerTask() {
         override fun run() {
             runOnUiThread {
                 if (mpWillyWonka.isPlaying && sbSongSeek.progress < sbSongSeek.max) {
                     sbSongSeek.progress += updateAmount
+                } else if(sbSongSeek.progress == sbSongSeek.max){
+                    val playIntent = Intent(this@CreateCueActivity, PlayProjectActivity::class.java)
+
+                    startActivity(playIntent)
+//                    javaplayIntent.putParcelableArrayListExtra("cueList", lightingCues)
+
                 }
             }
         }
 
+    }
+
+    override fun onStop() {
+        super.onStop()
+        musicTimer.cancel()
     }
 }

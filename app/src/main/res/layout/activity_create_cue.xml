@@ -28,34 +28,38 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintBottom_toTopOf="@id/btnPlay"
-            android:outlineSpotShadowColor="@color/colorAccent"
-            android:background="#272626"
-            android:layout_margin="10dp"
+            android:progressTint="@color/colorPrimaryDark"
+            android:progressBackgroundTint="@color/backround_grey"
+            android:thumbTint="@color/colorPrimary"
+            android:layout_marginBottom="20dp"
     />
 
-    <Button
+    <ImageButton
             android:id="@+id/btnPlay"
-            android:background="@drawable/playbutton_circle"
-            android:layout_margin="10dp"
+            android:src="@drawable/ic_play_arrow_vec"
+            android:backgroundTint="@color/colorPrimary"
             android:layout_width="50dp" android:layout_height="50dp"
+            android:scaleType="fitXY"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:onClick="playButtonClick"/>
+            android:onClick="playButtonClick"
+            android:layout_marginBottom="20dp"
+    />
 
-    <Button
-            android:id="@+id/btnBack" android:layout_width="35dp" android:layout_height="35dp"
-            android:background="@drawable/playbutton_circle"
+    <ImageButton
+            android:id="@+id/btnBack" android:layout_width="40dp" android:layout_height="40dp"
+            android:background="@drawable/ic_fast_rewind"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/btnPlay"
             app:layout_constraintRight_toLeftOf="@id/btnPlay"
             app:layout_constraintTop_toTopOf="@id/btnPlay"
             android:onClick="leftSeekClick"/>
 
-    <Button
-            android:id="@+id/btnFwd" android:layout_width="35dp" android:layout_height="35dp"
+    <ImageButton
+            android:id="@+id/btnFwd" android:layout_width="40dp" android:layout_height="40dp"
             app:layout_constraintRight_toRightOf="parent"
-            android:background="@drawable/playbutton_circle"
+            android:background="@drawable/ic_fast_forward"
             app:layout_constraintBottom_toBottomOf="@id/btnPlay"
             app:layout_constraintLeft_toRightOf="@id/btnPlay"
             app:layout_constraintTop_toTopOf="@id/btnPlay"
