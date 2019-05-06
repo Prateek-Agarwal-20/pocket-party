@@ -8,20 +8,22 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import com.google.firebase.auth.FirebaseAuth
 import android.view.View
+import com.example.pocketparty.data.SpotifyAppRemoteSingleton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 import com.spotify.android.appremote.api.SpotifyAppRemote;
-import kotlinx.android.synthetic.main.content_main.*
-import com.google.firebase.FirebaseApp
-import com.example.pocketparty.auth.Authentication
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
-    val AUTH_REQUEST_CODE = 1337
     private var mSpotifyAppRemote: SpotifyAppRemote? = null
+    private var spotifyAccessToken: String? = null
+    private var user: FirebaseUser? = null
     private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,20 +31,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        loginBtn.setOnClickListener {
-            Authentication.connectToSpotify(this)
-        }
+        val i = getIntent()
+        user = i.getParcelableExtra("FIREBASE_USER")
+        spotifyAccessToken = i.getStringExtra("SPOTIFY_ACCESS_TOKEN")
+        mSpotifyAppRemote = SpotifyAppRemoteSingleton.spotifyAppRemote
+        auth = FirebaseAuth.getInstance()
+
 
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
+
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
-
-        auth = FirebaseAuth.getInstance()
-        FirebaseApp.initializeApp(this)
     }
 
     override fun onStop() {
@@ -77,22 +80,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // Handle navigation view item clicks here.
         when (item.itemId) {
-            R.id.nav_camera -> {
-                // Handle the camera action
+            R.id.nav_account -> {
+                // Handle the account page action
             }
-            R.id.nav_gallery -> {
+            R.id.nav_listen -> {
 
             }
-            R.id.nav_slideshow -> {
-
+            R.id.nav_create -> {
+                goToCreateCue()
             }
-            R.id.nav_manage -> {
-
-            }
-            R.id.nav_share -> {
-
-            }
-            R.id.nav_send -> {
+            R.id.nav_edit -> {
 
             }
         }
@@ -101,22 +98,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
-        super.onActivityResult(requestCode, resultCode, intent)
-
-        // Check if result comes from the spotify login activity
-        if (requestCode == AUTH_REQUEST_CODE) {
-            Authentication.loginWithSpotify(this, resultCode, intent, drawer_layout)
-        }
-    }
-
-    fun setSpotifyAppRemote(spotifyAppRemote: SpotifyAppRemote) {
-        mSpotifyAppRemote = spotifyAppRemote
-    }
-
-
-    //OnClick to test createcue page
-    fun gotoCreateCue(view: View){
+    fun goToCreateCue(){
         startActivity(Intent(this@MainActivity, CreateCueActivity::class.java))
     }
 
