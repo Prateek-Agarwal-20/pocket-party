@@ -67,3 +67,5 @@ fastlane/readme.md
 # Environment Variables Store, service account file
 service-account-file.json
 
+# metadata file, just causes a lot of problems and gets re-created anyway, so adding here
+.DS_Store
