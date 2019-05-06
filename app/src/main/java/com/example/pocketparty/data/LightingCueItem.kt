@@ -1,3 +1,7 @@
 package com.example.pocketparty.data
 
-data class LightingCueItem(val startTime: Float, val endTime: Float)
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
+data class LightingCueItem(var startTime: Int, var endTime: Int): Parcelable
