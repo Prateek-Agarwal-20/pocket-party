@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val AUTH_REQUEST_CODE = 1337
     private var mSpotifyAppRemote: SpotifyAppRemote? = null
     private lateinit var auth: FirebaseAuth
+    private var spotifyAccessToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +113,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     fun setSpotifyAppRemote(spotifyAppRemote: SpotifyAppRemote) {
         mSpotifyAppRemote = spotifyAppRemote
+    }
+
+    fun saveSpotifyAccessToken(accessToken: String) {
+        spotifyAccessToken = accessToken
     }
 
 
