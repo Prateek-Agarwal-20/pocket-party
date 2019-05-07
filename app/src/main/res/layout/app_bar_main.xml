@@ -17,11 +17,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="?attr/colorPrimary"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+            <ImageButton
+                    android:id="@+id/searchBtn"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:src="@drawable/ic_search"
+                    android:layout_gravity="end"
+                    android:contentDescription="@string/action_search"
+                    android:backgroundTint="@color/common_google_signin_btn_text_dark_disabled"
+                    android:tint="@color/browser_actions_bg_grey"/>
+
+        </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main"/>
+
+    <include layout="@layout/content_main" android:id="@+id/include"/>
 
     <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
