@@ -2,11 +2,14 @@ package com.example.pocketparty
 
 import android.app.SearchManager
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.example.pocketparty.data.SpotifyAppRemoteSingleton
@@ -17,6 +20,11 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.client.Subscription
+import com.spotify.protocol.types.ListItems
+import com.spotify.protocol.types.PlayerState
+import android.R.attr.track
+import android.os.Handler
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -109,10 +117,43 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+    }
+
 
     private fun initiateCreatePipeline() {
-        mSpotifyAppRemote!!.contentApi.getRecommendedContentItems(ContentApi.ContentType.DEFAULT)
-        goToCreateCue()
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("spotify:")
+        intent.putExtra(
+            Intent.EXTRA_REFERRER,
+            Uri.parse("android-app://" + this.getPackageName())
+        )
+        startActivity(intent)
+
+        var playerSub = mSpotifyAppRemote!!.playerApi.subscribeToPlayerState()
+        playerSub.setEventCallback { ps ->
+            printMany(ps)
+        }
+
+        // subscribe to player state
+        // wait for change in track
+        // goBack() to go to this method (or maybe just goToCreateCue())
+        //goToCreateCue()
+    }
+
+    private fun printMany(s: PlayerState) {
+        val handler = Handler()
+        val delay = 1000 //milliseconds
+
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                Log.d("RESPONSE", s.toString())
+                handler.postDelayed(this, delay.toLong())
+            }
+        }, delay.toLong())
+
     }
 
     private fun goToCreateCue(){

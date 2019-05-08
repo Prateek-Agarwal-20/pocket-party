@@ -47,6 +47,10 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    fun redirectToSpotify() {
+        // TODO: redirect to play store to download spotify
+    }
+
     fun setSpotifyAppRemote(spotifyAppRemote: SpotifyAppRemote) {
         mSpotifyAppRemote = spotifyAppRemote
     }

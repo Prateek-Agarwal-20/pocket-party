@@ -2,6 +2,7 @@ package com.example.pocketparty.auth
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
@@ -18,6 +19,9 @@ import com.spotify.sdk.android.authentication.AuthenticationRequest
 import com.spotify.sdk.android.authentication.AuthenticationResponse
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.login_screen.*
+import android.support.v4.content.ContextCompat.startActivity
+
+
 
 object Authentication {
 
@@ -54,6 +58,7 @@ object Authentication {
                         Snackbar.make(
                             loginActivity.login_layout, "Please download Spotify to proceed", Snackbar.LENGTH_LONG
                         ).show()
+                        loginActivity.redirectToSpotify()
                     }
                     if(error is NotLoggedInException) {
                         Log.d("SPOTIFY_REMOTE_LOGIN", "user is not logged in")
