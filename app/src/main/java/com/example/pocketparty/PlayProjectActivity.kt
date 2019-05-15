@@ -40,9 +40,9 @@ class PlayProjectActivity : AppCompatActivity() {
         setup()
     }
 
-    private fun doAnims(){
-        val seekBarAnim = AnimationUtils.loadAnimation(this@PlayProjectActivity, R.anim.seekbar_anim_create)
-        sbProjectSeek.startAnimation(seekBarAnim)
+    private fun doAnims() {
+//        val seekBarAnim = AnimationUtils.loadAnimation(this@PlayProjectActivity, R.anim.seekbar_anim_create)
+//        sbProjectSeek.startAnimation(seekBarAnim)
 
         val leftSeekAnim = AnimationUtils.loadAnimation(this@PlayProjectActivity, R.anim.leftseek_anim_create)
         btnProjectLeftSeek.startAnimation(leftSeekAnim)
@@ -56,19 +56,20 @@ class PlayProjectActivity : AppCompatActivity() {
 
     inner class playThread : Thread() {
         override fun run() {
-            Log.i("TAG", "run loop started")
-            Log.i(
-                "TAG",
-                "isplaying: ${mpProjectSong.isPlaying} --- seek < max: ${sbProjectSeek.progress < sbProjectSeek.max}"
-            )
-            while (enabled && mpProjectSong.isPlaying && sbProjectSeek.progress < sbProjectSeek.max) {
-                Log.i("PROGRESS", sbProjectSeek.progress.toString())
-                Log.i("TAG", "while loop entered")
+
+            while (enabled && mpProjectSong.isPlaying && mpProjectSong.currentPosition < mpProjectSong.duration){
+//                && sbProjectSeek.progress < sbProjectSeek.max) {
+
+
                 if (!flashEngaged && mpProjectSong.currentPosition > currentCue.startTime) {
                     cameraManager.setTorchMode(camId, true)
                     flashEngaged = true
                     Log.i("TAG", "flash engage attempted - ${currentCueIndex}")
-                } else if (flashEngaged && mpProjectSong.currentPosition >= currentCue.endTime) {
+                    Log.i("TIMECHECK", "ON time: ${mpProjectSong.currentPosition}")
+                    Log.i("TIMECHECK", "ON startTime: ${currentCue.startTime}")
+                    Log.i("TIMECHECK", "ON endTime: ${currentCue.endTime}")
+                }
+                if (mpProjectSong.currentPosition >= currentCue.endTime) {
                     cameraManager.setTorchMode(camId, false)
                     flashEngaged = false
                     currentCueIndex++
@@ -76,7 +77,11 @@ class PlayProjectActivity : AppCompatActivity() {
                         currentCue = lightingCues.get(currentCueIndex)
                     } else {
                         enabled = false
+                        currentCueIndex--
                     }
+                    Log.i("TIMECHECK", "OFF time: ${mpProjectSong.currentPosition}")
+                    Log.i("TIMECHECK", "OFF startTime: ${currentCue.startTime}")
+                    Log.i("TIMECHECK", "OFF endTime: ${currentCue.endTime}")
                     Log.i("TAG", "flash disengage attempted - ${currentCueIndex}")
                 }
             }
@@ -86,9 +91,20 @@ class PlayProjectActivity : AppCompatActivity() {
     private fun setup() {
         setUpFlashParams()
         lightingCues = intent.getParcelableArrayListExtra<LightingCueItem>(CreateCueActivity.LISTKEY)
-        Log.i("TAG", "recieved as: ${lightingCues}")
-        mpProjectSong = MediaPlayer.create(this, R.raw.willywonkaremix)
-        setupProgressBar()
+        if (!lightingCues.isEmpty()) {
+            Log.i("TAG", "recieved as: ${lightingCues}")
+            mpProjectSong = MediaPlayer.create(this, R.raw.willywonkaremix)
+//            setupProgressBar()
+            setUpOnClicks()
+        } else {
+            Toast.makeText(this, "No lighting cues found!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setUpOnClicks() {
+        btnProjectPlay.setOnClickListener { playProjectClick() }
+        btnProjectLeftSeek.setOnClickListener { leftProjectSeekClick() }
+        btnProjectRightSeek.setOnClickListener { rightProjectSeekClick() }
     }
 
     //Required parameters to operate the flashlight
@@ -98,34 +114,99 @@ class PlayProjectActivity : AppCompatActivity() {
     }
 
 
-    fun setupProgressBar() {
-        val duration = mpProjectSong.duration
-        sbProjectSeek.max = duration
-        updateAmount = duration / 100
-        projectPlayTimer.scheduleAtFixedRate(projectPlayTimerTask(), 0, updateAmount.toLong())
-        setProjectSeekListener()
+//    fun setupProgressBar() {
+//        val duration = mpProjectSong.duration
+//        sbProjectSeek.max = duration
+//        updateAmount = duration / 100
+//        projectPlayTimer.scheduleAtFixedRate(projectPlayTimerTask(), 0, updateAmount.toLong())
+//        setProjectSeekListener()
+//    }
+
+//    private fun setProjectSeekListener() {
+//        sbProjectSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+//                mpProjectSong.pause()
+//                btnProjectPlay.setImageResource(R.drawable.ic_play_arrow_vec)
+//            }
+//
+//            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+//                mpProjectSong.seekTo(sbProjectSeek.progress)
+//                mpProjectSong.start()
+//                btnProjectPlay.setImageResource(R.drawable.ic_pause)
+//
+//                if (mpProjectSong.currentPosition < currentCue.startTime) {
+//                    handleBackSeek()
+//
+//                }
+//
+//                if(mpProjectSong.currentPosition > currentCue.endTime){
+//                    handleForwardSeek()
+//                }
+//            }
+//
+//        })
+//    }
+
+//    private fun handleBackSeek() {
+//        mpProjectSong.pause()
+//        setButtonAbility(false)
+//        playThread().join()
+//        Log.i("TAG", "back seek begin")
+//        while (currentCueIndex > 0 && lightingCues.get(currentCueIndex - 1).startTime > mpProjectSong.currentPosition) {
+//            currentCueIndex--
+//            Log.i("TAG", "cueindex on rewind: ${currentCueIndex}")
+//        }
+//        Log.i("TAG", "end reached")
+//
+//        //Todo - fix indexing problem
+//
+//        if (currentCueIndex > 0) {
+////            currentCueIndex--
+//            currentCue = lightingCues.get(currentCueIndex)
+//            mpProjectSong.seekTo(currentCue.endTime)
+//            sbProjectSeek.setProgress(currentCue.endTime)
+//        }
+//
+//        mpProjectSong.start()
+//        enabled = true
+//        playThread().start()
+//        Log.i("TIMECHECK", "----------------------------------------------------")
+//        setButtonAbility(true)
+//    }
+
+//    private fun handleForwardSeek(){
+//        mpProjectSong.pause()
+//        setButtonAbility(false)
+//        playThread().join()
+//        while(currentCueIndex < lightingCues.size - 1 && lightingCues.get(currentCueIndex + 1).endTime < mpProjectSong.currentPosition){
+//            currentCueIndex++
+//        }
+//
+//        if(currentCueIndex < lightingCues.size-1){
+////            currentCueIndex++
+//            currentCue = lightingCues.get(currentCueIndex)
+//            mpProjectSong.seekTo(currentCue.endTime)
+//            sbProjectSeek.setProgress(currentCue.endTime)
+//        }
+//
+//        mpProjectSong.start()
+//        enabled = true
+//        playThread().start()
+//        Log.i("TIMECHECK", "----------------------------------------------------")
+//        setButtonAbility(true)
+//    }
+
+    private fun setButtonAbility(ability: Boolean) {
+        btnProjectLeftSeek.isEnabled = ability
+        btnProjectRightSeek.isEnabled = ability
+        btnProjectPlay.isEnabled = ability
+//        sbProjectSeek.isEnabled = ability
     }
 
-    private fun setProjectSeekListener() {
-        sbProjectSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                mpProjectSong.pause()
-                btnProjectPlay.setImageResource(R.drawable.ic_play_arrow_vec)
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                mpProjectSong.seekTo(sbProjectSeek.progress)
-                mpProjectSong.start()
-                btnProjectPlay.setImageResource(R.drawable.ic_pause)
-            }
-
-        })
-    }
-
-    fun playProjectClick(view: View) {
+    fun playProjectClick() {
         if (firstTime) {
             currentCue = lightingCues.get(currentCueIndex)
             playThread().start()
@@ -141,28 +222,36 @@ class PlayProjectActivity : AppCompatActivity() {
         }
     }
 
-    fun leftProjectSeekClick(view: View) {
-        sbProjectSeek.setProgress(0)
+    fun leftProjectSeekClick() {
+//        sbProjectSeek.setProgress(0)
         mpProjectSong.seekTo(0)
+        currentCueIndex = 0
+        currentCue = lightingCues.get(currentCueIndex)
+        playThread().join()
+        enabled = true
+        playThread().start()
     }
 
-    fun rightProjectSeekClick(view: View) {
-        sbProjectSeek.setProgress(sbProjectSeek.max)
-        mpProjectSong.seekTo(sbProjectSeek.max)
+    fun rightProjectSeekClick() {
+//        sbProjectSeek.setProgress(sbProjectSeek.max)
+//        mpProjectSong.seekTo(sbProjectSeek.max)
+        mpProjectSong.seekTo(mpProjectSong.duration)
+        currentCueIndex = lightingCues.size - 1
+        currentCue = lightingCues.get(currentCueIndex)
     }
-
-    inner class projectPlayTimerTask : TimerTask() {
-        override fun run() {
-            runOnUiThread {
-                if (mpProjectSong.isPlaying && sbProjectSeek.progress < sbProjectSeek.max) {
-                    sbProjectSeek.progress += updateAmount
-                } else if (sbProjectSeek.progress == sbProjectSeek.max) {
-                    Toast.makeText(this@PlayProjectActivity, "Song over!", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-    }
+//
+//    inner class projectPlayTimerTask : TimerTask() {
+//        override fun run() {
+//            runOnUiThread {
+//                if (mpProjectSong.isPlaying && sbProjectSeek.progress < sbProjectSeek.max) {
+//                    sbProjectSeek.progress += updateAmount
+//                } else if (sbProjectSeek.progress == sbProjectSeek.max) {
+//                    Toast.makeText(this@PlayProjectActivity, "Song over!", Toast.LENGTH_SHORT).show()
+//                }
+//            }
+//        }
+//
+//    }
 
     override fun onStop() {
         super.onStop()
