@@ -57,9 +57,16 @@ class PlayProjectActivity : AppCompatActivity() {
     inner class playThread : Thread() {
         override fun run() {
 
-            while (enabled && mpProjectSong.isPlaying && mpProjectSong.currentPosition < mpProjectSong.duration){
+            Log.i("TAG", "Pre-while")
+            Log.i("TAG", "enabled: ${enabled}")
+            Log.i("TAG", "playing: ${mpProjectSong.isPlaying}")
+            Log.i("TAG", "duration: ${mpProjectSong.currentPosition < mpProjectSong.duration}")
+
+
+            while (enabled && mpProjectSong.currentPosition < mpProjectSong.duration){
 //                && sbProjectSeek.progress < sbProjectSeek.max) {
 
+                Log.i("REPEAT", "While loop entered")
 
                 if (!flashEngaged && mpProjectSong.currentPosition > currentCue.startTime) {
                     cameraManager.setTorchMode(camId, true)
@@ -209,9 +216,9 @@ class PlayProjectActivity : AppCompatActivity() {
     fun playProjectClick() {
         if (firstTime) {
             currentCue = lightingCues.get(currentCueIndex)
+            enabled = true
             playThread().start()
             firstTime = false
-            enabled = true
         }
         if (mpProjectSong.isPlaying) {
             mpProjectSong.pause()
