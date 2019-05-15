@@ -5,5 +5,5 @@ import com.spotify.android.appremote.api.SpotifyAppRemote
 import kotlinx.android.parcel.Parcelize
 
 object SpotifyAppRemoteSingleton  {
-    lateinit var spotifyAppRemote : SpotifyAppRemote
+    var spotifyAppRemote : SpotifyAppRemote? = null
 }

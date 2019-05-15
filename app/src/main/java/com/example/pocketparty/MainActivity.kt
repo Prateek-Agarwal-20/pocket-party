@@ -1,5 +1,6 @@
 package com.example.pocketparty
 
+import android.app.SearchManager
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.NavigationView
@@ -8,11 +9,10 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import com.example.pocketparty.data.SpotifyAppRemoteSingleton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.gson.Gson
+import com.spotify.android.appremote.api.ContentApi
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
@@ -32,11 +32,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         val i = getIntent()
-        user = i.getParcelableExtra("FIREBASE_USER")
-        spotifyAccessToken = i.getStringExtra("SPOTIFY_ACCESS_TOKEN")
-        mSpotifyAppRemote = SpotifyAppRemoteSingleton.spotifyAppRemote
+        if(intent.extras != null) {
+            user = i.getParcelableExtra("FIREBASE_USER")
+            spotifyAccessToken = i.getStringExtra("SPOTIFY_ACCESS_TOKEN")
+            mSpotifyAppRemote = SpotifyAppRemoteSingleton.spotifyAppRemote
+        }
         auth = FirebaseAuth.getInstance()
 
+        if (Intent.ACTION_SEARCH == intent.action) {
+            intent.getStringExtra(SearchManager.QUERY)?.also { query ->
+                // TODO: implement search here with `query` variable
+            }
+        }
+
+        searchBtn.setOnClickListener {
+            onSearchRequested()
+        }
 
         val toggle = ActionBarDrawerToggle(
             this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
@@ -87,7 +98,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             }
             R.id.nav_create -> {
-                goToCreateCue()
+                initiateCreatePipeline()
             }
             R.id.nav_edit -> {
 
@@ -98,7 +109,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
-    fun goToCreateCue(){
+
+    private fun initiateCreatePipeline() {
+        mSpotifyAppRemote!!.contentApi.getRecommendedContentItems(ContentApi.ContentType.DEFAULT)
+        goToCreateCue()
+    }
+
+    private fun goToCreateCue(){
         startActivity(Intent(this@MainActivity, CreateCueActivity::class.java))
     }
 
