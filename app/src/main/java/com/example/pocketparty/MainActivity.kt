@@ -2,11 +2,14 @@ package com.example.pocketparty
 
 import android.app.SearchManager
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.NavigationView
+import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.example.pocketparty.data.SpotifyAppRemoteSingleton
@@ -17,6 +20,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 
 import com.spotify.android.appremote.api.SpotifyAppRemote;
+import com.spotify.protocol.client.Subscription
+import com.spotify.protocol.types.ListItems
+import com.spotify.protocol.types.PlayerState
+import android.R.attr.track
+import android.os.Handler
+import com.spotify.protocol.types.Track
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -109,14 +119,51 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
 
-    private fun initiateCreatePipeline() {
-        mSpotifyAppRemote!!.contentApi.getRecommendedContentItems(ContentApi.ContentType.DEFAULT)
-        goToCreateCue()
     }
 
-    private fun goToCreateCue(){
-        startActivity(Intent(this@MainActivity, CreateCueActivity::class.java))
+
+    private fun initiateCreatePipeline() {
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("spotify:")
+        intent.putExtra(
+            Intent.EXTRA_REFERRER,
+            Uri.parse("android-app://" + this.getPackageName())
+        )
+        startActivity(intent)
+
+        // Make sure the player is paused
+        mSpotifyAppRemote!!.playerApi.pause()
+        var trackSelected:Track? = null
+
+        mSpotifyAppRemote!!.getPlayerApi().subscribeToPlayerState().setEventCallback { playerState ->
+            val track = playerState.track
+            if (track != null) {
+                Log.d("TRACK", track.name + " by " + track.artist.name);
+                trackSelected = track
+                Thread.sleep(2000)
+                // NOTE: This just takes the currently playing track as the chosen track. Need to implement Spotify
+                // search later. some ideas for how to do it once SDK is working:
+                // - subscribe to player state. once the player state track selected changes, use that track
+                // - manually poll track state every 500 milliseconds for track changes
+                // - add some sort of floating button on top of spotify that you can press when you're done choosing
+                // - wait for the player to start playing. Once it's playing, take the currently playing song
+                goToCreateCue(trackSelected)
+            }
+        }
+    }
+
+    private fun print(ps: PlayerState) {
+        Log.d("PLAYER_STATE", ps.track.toString())
+        Log.d("PLAYER_STATE", ps.isPaused.toString())
+    }
+
+    private fun goToCreateCue(t: Track?){
+        val i = Intent(this@MainActivity, CreateCueActivity::class.java)
+        i.putExtra("track_name", t?.name)
+        startActivity(i)
     }
 
 }
