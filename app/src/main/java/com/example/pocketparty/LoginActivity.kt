@@ -65,10 +65,11 @@ class LoginActivity : AppCompatActivity() {
 
     fun finishedLoginFlowSuccess(user: FirebaseUser?) {
         var i = Intent(this@LoginActivity, MainActivity::class.java)
-        i.putExtra("FIREBASE_USER", user)
+        i.putExtra("FIREBASE_USER", user!!)
         SpotifyAppRemoteSingleton.spotifyAppRemote = mSpotifyAppRemote!!
         i.putExtra("SPOTIFY_ACCESS_TOKEN", spotifyAccessToken)
-        // i.putExtra("SPOTIFY_USER", spotifyUser) TODO: for obtaining the user's profile, parsed by Klaxon according to the SpotifyUser class
+        i.putExtra("SPOTIFY_USER_IMG", spotifyUser!!.images[0].url)
+        i.putExtra("SPOTIFY_USER_DISPLAY_NAME", spotifyUser!!.display_name)
         startActivity(i)
     }
 }
