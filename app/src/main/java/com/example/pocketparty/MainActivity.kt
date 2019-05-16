@@ -25,6 +25,8 @@ import com.spotify.protocol.types.ListItems
 import com.spotify.protocol.types.PlayerState
 import android.R.attr.track
 import android.os.Handler
+import com.spotify.protocol.types.Track
+import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -132,32 +134,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         startActivity(intent)
 
-        var playerSub = mSpotifyAppRemote!!.playerApi.subscribeToPlayerState()
-        playerSub.setEventCallback { ps ->
-            printMany(ps)
-        }
+        // Make sure the player is paused
+        mSpotifyAppRemote!!.playerApi.pause()
+        var trackSelected:Track? = null
 
-        // subscribe to player state
-        // wait for change in track
-        // goBack() to go to this method (or maybe just goToCreateCue())
-        //goToCreateCue()
-    }
-
-    private fun printMany(s: PlayerState) {
-        val handler = Handler()
-        val delay = 1000 //milliseconds
-
-        handler.postDelayed(object : Runnable {
-            override fun run() {
-                Log.d("RESPONSE", s.toString())
-                handler.postDelayed(this, delay.toLong())
+        mSpotifyAppRemote!!.getPlayerApi().subscribeToPlayerState().setEventCallback { playerState ->
+            val track = playerState.track
+            if (track != null) {
+                Log.d("TRACK", track.name + " by " + track.artist.name);
+                trackSelected = track
+                Thread.sleep(2000)
+                // NOTE: This just takes the currently playing track as the chosen track. Need to implement Spotify
+                // search later. some ideas for how to do it once SDK is working:
+                // - subscribe to player state. once the player state track selected changes, use that track
+                // - manually poll track state every 500 milliseconds for track changes
+                // - add some sort of floating button on top of spotify that you can press when you're done choosing
+                // - wait for the player to start playing. Once it's playing, take the currently playing song
+                goToCreateCue(trackSelected)
             }
-        }, delay.toLong())
-
+        }
     }
 
-    private fun goToCreateCue(){
-        startActivity(Intent(this@MainActivity, CreateCueActivity::class.java))
+    private fun print(ps: PlayerState) {
+        Log.d("PLAYER_STATE", ps.track.toString())
+        Log.d("PLAYER_STATE", ps.isPaused.toString())
+    }
+
+    private fun goToCreateCue(t: Track?){
+        val i = Intent(this@MainActivity, CreateCueActivity::class.java)
+        i.putExtra("track_name", t?.name)
+        startActivity(i)
     }
 
 }
