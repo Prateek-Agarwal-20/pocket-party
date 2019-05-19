@@ -108,7 +108,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 // Handle the account page action
             }
             R.id.nav_listen -> {
-
+                val fbTestIntent = Intent(this@MainActivity, FirebaseTestingActivity::class.java)
+                fbTestIntent.putExtra("userID", user?.uid)
+                startActivity(fbTestIntent)
             }
             R.id.nav_create -> {
                 initiateCreatePipeline()
