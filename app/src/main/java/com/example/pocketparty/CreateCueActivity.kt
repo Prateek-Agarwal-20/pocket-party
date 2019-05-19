@@ -64,8 +64,44 @@ class CreateCueActivity : AppCompatActivity() {
     private fun setup() {
         setUpFlashParams()
         setupFlashOntouch()
-        mpWillyWonka = MediaPlayer.create(this, R.raw.willywonkaremix)
+        setUpMediaPlayer()
         setupProgressBar()
+    }
+
+    private fun setUpMediaPlayer(){
+        //Todo - prateek update for spotify
+        mpWillyWonka = MediaPlayer.create(this, R.raw.willywonkaremix)
+    }
+
+    private fun playSong(){
+        //Todo - Prateek, update for spotify
+        mpWillyWonka.start()
+        Log.i("PLAYCHECK", "check in play method: ${mpWillyWonka.isPlaying}")
+    }
+
+    private fun pauseSong(){
+        //Todo - Prateek, update for spotyify
+        mpWillyWonka.pause()
+    }
+
+    private fun stopSong(){
+        //Todo - Prateek, update for spotyify
+        mpWillyWonka.stop()
+    }
+
+    private fun seekSongTo(progress: Int){
+        //Todo - Prateek, update for spotyify
+        mpWillyWonka.seekTo(progress)
+    }
+
+    private fun songIsPlaying(): Boolean{
+        //Todo - Prateek, update for spotyify
+        return mpWillyWonka.isPlaying
+    }
+
+    private fun getSongCurrentPosition(): Int{
+        //Todo - Prateek, update for spotyify
+        return mpWillyWonka.currentPosition
     }
 
     //Required parameters to operate the flashlight
@@ -82,11 +118,16 @@ class CreateCueActivity : AppCompatActivity() {
     }
 
     fun setupProgressBar() {
-        val duration = mpWillyWonka.duration
-        sbSongSeek.max = duration
-        updateAmount = duration / 100
+        getSongDuration()
         musicTimer.scheduleAtFixedRate(musicTimerTask(), 0, updateAmount.toLong())
         setSeekListener()
+    }
+
+    private fun getSongDuration(){
+        //Todo - Prateek, update for spotify
+        val duration = mpWillyWonka.duration
+        sbSongSeek.max = duration
+        updateAmount = duration/100
     }
 
     private fun setSeekListener() {
@@ -95,18 +136,20 @@ class CreateCueActivity : AppCompatActivity() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                mpWillyWonka.pause()
+                //Todo - Prateek, update for spotify
+                pauseSong()
                 btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
                 btnFlash.isEnabled = false
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                mpWillyWonka.seekTo(sbSongSeek.progress)
-                mpWillyWonka.start()
+                //Todo - Prateek, update for spotify
+                seekSongTo(sbSongSeek.progress)
+                playSong()
                 btnPlay.setImageResource(R.drawable.ic_pause)
                 btnFlash.isEnabled = true
 
-                if (mpWillyWonka.currentPosition < currentCue.startTime) {
+                if (getSongCurrentPosition() < currentCue.startTime) {
                     handleBackSeek()
                 }
             }
@@ -115,12 +158,12 @@ class CreateCueActivity : AppCompatActivity() {
     }
 
     private fun handleBackSeek() {
-        mpWillyWonka.pause()
+        pauseSong()
         setButtonAbility(false)
         Log.i("TAG", "back seek begin")
         Log.i("TAG", "first ${!lightingCues.get(currentCueIndex - 1).equals(null)}")
-        Log.i("TAG", "sceond ${lightingCues.get(currentCueIndex - 1).startTime > mpWillyWonka.currentPosition}")
-        while (currentCueIndex > 0 && lightingCues.get(currentCueIndex - 1).startTime > mpWillyWonka.currentPosition) {
+        Log.i("TAG", "sceond ${lightingCues.get(currentCueIndex - 1).startTime > getSongCurrentPosition()}")
+        while (currentCueIndex > 0 && lightingCues.get(currentCueIndex - 1).startTime > getSongCurrentPosition()) {
             currentCueIndex--
             Log.i("TAG", "cueindex on rewind: ${currentCueIndex}")
         }
@@ -141,7 +184,7 @@ class CreateCueActivity : AppCompatActivity() {
         Log.i("TAG", "cues deleted")
 
 
-        mpWillyWonka.start()
+        playSong()
         setButtonAbility(true)
     }
 
@@ -173,7 +216,7 @@ class CreateCueActivity : AppCompatActivity() {
     private fun handleFlashButtonDown() {
         cameraManager.setTorchMode(camId, true)
         btnFlash.isPressed = true
-        lightingCues.add(LightingCueItem(mpWillyWonka.currentPosition, 0))
+        lightingCues.add(LightingCueItem(getSongCurrentPosition(), 0))
         currentCue = lightingCues.get(currentCueIndex)
         sbSongSeek.isEnabled = false
     }
@@ -181,31 +224,31 @@ class CreateCueActivity : AppCompatActivity() {
     private fun handleFlashButtonUp() {
         cameraManager.setTorchMode(camId, false)
         btnFlash.isPressed = false
-        currentCue.endTime = mpWillyWonka.currentPosition
+        currentCue.endTime = getSongCurrentPosition()
         sbSongSeek.isEnabled = true
         currentCueIndex++
         Log.i("TAG", "cueindex: ${currentCueIndex}")
     }
 
     fun playButtonClick(view: View) {
-        if (mpWillyWonka.isPlaying) {
-            mpWillyWonka.pause()
+        if (songIsPlaying()) {
+            pauseSong()
             btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
         } else {
-            mpWillyWonka.start()
+            playSong()
             btnPlay.setImageResource(R.drawable.ic_pause)
         }
     }
 
     fun leftSeekClick(view: View) {
         sbSongSeek.setProgress(0)
-        mpWillyWonka.seekTo(0)
+        seekSongTo(0)
         deleteAllCues()
     }
 
     fun rightSeekClick(view: View) {
         sbSongSeek.setProgress(sbSongSeek.max)
-        mpWillyWonka.seekTo(sbSongSeek.max)
+        seekSongTo(sbSongSeek.max)
     }
 
     fun doneButtonClick(view: View) {
@@ -224,7 +267,10 @@ class CreateCueActivity : AppCompatActivity() {
     inner class musicTimerTask : TimerTask() {
         override fun run() {
             runOnUiThread {
-                if (mpWillyWonka.isPlaying && sbSongSeek.progress < sbSongSeek.max) {
+                Log.i("AMOUNTCHECK", "seek prog = ${sbSongSeek.progress} / max: = ${sbSongSeek.max}")
+                Log.i("PLAYCHECK", "playing: ${songIsPlaying()}")
+                if (songIsPlaying() && sbSongSeek.progress < sbSongSeek.max) {
+                    Log.i("AMOUNTCHECK","updateAmount = ${updateAmount}")
                     sbSongSeek.progress += updateAmount
                 }
             }
@@ -235,6 +281,6 @@ class CreateCueActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         musicTimer.cancel()
-        mpWillyWonka.stop()
+        stopSong()
     }
 }
