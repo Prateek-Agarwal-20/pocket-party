@@ -3,30 +3,30 @@ package com.example.pocketparty.data
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.*
 
-class FireInterface(context: Context, userID: String) {
+class FireInterface {
 
     private val db = FirebaseFirestore.getInstance()
-    private val appContext = context
-    private val userDataReference = db.collection("users").document(userID)
+    private var appContext: Context
+    private var userDataReference: DocumentReference
     private var namesList = ArrayList<String>()
     private lateinit var doc: DocumentSnapshot
+    private var ready = false
 
-    init {
-        getUserData()
+    constructor(context: Context, userID: String) {
+        appContext = context
+        userDataReference = db.collection("users").document(userID)
     }
 
-    private fun getUserData() {
+    fun getUserData() {
         userDataReference.get()
             .addOnSuccessListener { document ->
                 if (document != null) {
                     Log.i("letsSee", "here: ${document.data}")
                     doc = document
                     parseRecievedData()
+                    ready = true
                 } else {
                     notifyFailure()
                 }
@@ -38,6 +38,7 @@ class FireInterface(context: Context, userID: String) {
         totalList?.forEach { (key, value) ->
             namesList.add(key)
         }
+        Log.i("NAMES", "${namesList}")
     }
 
     fun getSingleCue(cueName: String) : LightingCue {
@@ -45,12 +46,16 @@ class FireInterface(context: Context, userID: String) {
     }
 
     fun getAllLightingCues():List<LightingCue> {
+        while(!ready) {
+            Log.i("WAITING", "for user initialization")
+        }
         var projectNames = getProjectNames()
+        Log.i("IN ALL CUES", "${projectNames}")
         var lightingCues = mutableListOf<LightingCue>()
         projectNames.forEach {project ->
-
             lightingCues.add(parseLightingCue(project))
         }
+        Log.i("IN ALL CUES", lightingCues.size.toString())
         return lightingCues
     }
 

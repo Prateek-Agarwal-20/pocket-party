@@ -38,6 +38,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var user: FirebaseUser? = null
     private lateinit var auth: FirebaseAuth
     private lateinit var profile_image_url: String
+    private lateinit var fstore: FireInterface
 
     lateinit var cueAdapter: CueAdapter
 
@@ -84,7 +85,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initRecyclerView() {
         Thread {
-            var cueList: List<LightingCue> = FireInterface(this, user!!.uid).getAllLightingCues()
+            fstore = FireInterface(this, "robertoelcaldera") // TODO change to correct userId user!!.uid
+            fstore.getUserData()
+            var cueList: List<LightingCue> = fstore.getAllLightingCues()
+            Log.i("INIT RECYCLER", "got lighting cues: " + cueList.size)
             runOnUiThread {
                 cueAdapter = CueAdapter(this, cueList)
                 recyclerCues.layoutManager = LinearLayoutManager(this)
