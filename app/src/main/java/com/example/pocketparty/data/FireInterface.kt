@@ -69,8 +69,10 @@ class FireInterface(context: Context, userID: String) {
 
     fun saveProject(projectName: String, songName: String, cueList: ArrayList<LightingCueItem>) {
         var dataList = arrayListOf<Any>(songName)
-        for (i in 0 until cueList.size) {
-            dataList.add(cueList.get(i))
+        for (i in 0 until cueList.size step 2) {
+            dataList.add(cueList.get(i).startTime)
+            dataList.add(cueList.get(i).endTime)
+
         }
 
         val docData = HashMap<String, Any>()
