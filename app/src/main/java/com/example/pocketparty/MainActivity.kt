@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initRecyclerView() {
         Thread {
-            fstore = FireInterface(this, "robertoelcaldera") // TODO change to correct userId user!!.uid
+            fstore = FireInterface(this, user!!.uid) // TODO change to correct userId user!!.uid
             fstore.getUserData()
             var cueList: List<LightingCue> = fstore.getAllLightingCues()
             Log.i("INIT RECYCLER", "got lighting cues: " + cueList.size)
@@ -141,7 +141,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(fbTestIntent)
             }
             R.id.nav_create -> {
-                initiateCreatePipeline()
+                val createCueIntent = Intent(this@MainActivity, CreateCueActivity::class.java)
+                createCueIntent.putExtra("userID", user!!.uid)
+                startActivity(createCueIntent)
             }
             R.id.nav_edit -> {
 
@@ -158,35 +160,36 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
 
-    private fun initiateCreatePipeline() {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("spotify:")
-        intent.putExtra(
-            Intent.EXTRA_REFERRER,
-            Uri.parse("android-app://" + this.getPackageName())
-        )
-        startActivity(intent)
 
-        // Make sure the player is paused
-        mSpotifyAppRemote!!.playerApi.pause()
-        var trackSelected:Track? = null
-
-        mSpotifyAppRemote!!.getPlayerApi().subscribeToPlayerState().setEventCallback { playerState ->
-            val track = playerState.track
-            if (track != null) {
-                Log.d("TRACK", track.name + " by " + track.artist.name);
-                trackSelected = track
-                Thread.sleep(2000)
-                // NOTE: This just takes the currently playing track as the chosen track. Need to implement Spotify
-                // search later. some ideas for how to do it once SDK is working:
-                // - subscribe to player state. once the player state track selected changes, use that track
-                // - manually poll track state every 500 milliseconds for track changes
-                // - add some sort of floating button on top of spotify that you can press when you're done choosing
-                // - wait for the player to start playing. Once it's playing, take the currently playing song
-                goToCreateCue(trackSelected)
-            }
-        }
-    }
+//    private fun initiateCreatePipeline() {
+//        val intent = Intent(Intent.ACTION_VIEW)
+//        intent.data = Uri.parse("spotify:")
+//        intent.putExtra(
+//            Intent.EXTRA_REFERRER,
+//            Uri.parse("android-app://" + this.getPackageName())
+//        )
+//        startActivity(intent)
+//
+//        // Make sure the player is paused
+//        mSpotifyAppRemote!!.playerApi.pause()
+//        var trackSelected:Track? = null
+//
+//        mSpotifyAppRemote!!.getPlayerApi().subscribeToPlayerState().setEventCallback { playerState ->
+//            val track = playerState.track
+//            if (track != null) {
+//                Log.d("TRACK", track.name + " by " + track.artist.name);
+//                trackSelected = track
+//                Thread.sleep(2000)
+//                // NOTE: This just takes the currently playing track as the chosen track. Need to implement Spotify
+//                // search later. some ideas for how to do it once SDK is working:
+//                // - subscribe to player state. once the player state track selected changes, use that track
+//                // - manually poll track state every 500 milliseconds for track changes
+//                // - add some sort of floating button on top of spotify that you can press when you're done choosing
+//                // - wait for the player to start playing. Once it's playing, take the currently playing song
+//                goToCreateCue(trackSelected)
+//            }
+//        }
+//    }
 
     private fun goToCreateCue(t: Track?){
         val i = Intent(this@MainActivity, CreateCueActivity::class.java)

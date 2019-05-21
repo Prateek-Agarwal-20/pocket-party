@@ -32,13 +32,13 @@ class LoginActivity : AppCompatActivity() {
         loginBtn.setOnClickListener {
             Authentication.connectToSpotify(this)
             loginBtn.visibility = GONE
-            enterBtn.visibility = GONE
+//            enterBtn.visibility = GONE
             pbLoading.visibility = VISIBLE
         }
 
-        enterBtn.setOnClickListener {
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-        }
+//        enterBtn.setOnClickListener {
+//            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+//        }
 
         auth = FirebaseAuth.getInstance()
         FirebaseApp.initializeApp(this)
