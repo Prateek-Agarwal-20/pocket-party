@@ -8,10 +8,15 @@ import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import com.example.pocketparty.adapter.CueAdapter
+import com.example.pocketparty.data.FireInterface
+import com.example.pocketparty.data.LightingCue
 import com.example.pocketparty.data.SpotifyAppRemoteSingleton
 import com.example.pocketparty.image.CircleTransform
 import com.google.firebase.auth.FirebaseAuth
@@ -22,6 +27,7 @@ import kotlinx.android.synthetic.main.app_bar_main.*
 import com.spotify.android.appremote.api.SpotifyAppRemote;
 import com.spotify.protocol.types.Track
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 
@@ -32,6 +38,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var user: FirebaseUser? = null
     private lateinit var auth: FirebaseAuth
     private lateinit var profile_image_url: String
+    private lateinit var fstore: FireInterface
+
+    lateinit var cueAdapter: CueAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +79,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toggle.syncState()
 
         nav_view.setNavigationItemSelectedListener(this)
+
+        initRecyclerView()
+    }
+
+    private fun initRecyclerView() {
+        Thread {
+            fstore = FireInterface(this, "robertoelcaldera") // TODO change to correct userId user!!.uid
+            fstore.getUserData()
+            var cueList: List<LightingCue> = fstore.getAllLightingCues()
+            Log.i("INIT RECYCLER", "got lighting cues: " + cueList.size)
+            runOnUiThread {
+                cueAdapter = CueAdapter(this, cueList)
+                recyclerCues.layoutManager = LinearLayoutManager(this)
+                recyclerCues.adapter = cueAdapter
+
+                val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+                recyclerCues.addItemDecoration(itemDecoration)
+            }
+        }.start()
     }
 
     override fun onStop() {
