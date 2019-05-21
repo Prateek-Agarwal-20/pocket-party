@@ -160,7 +160,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun goToCreateCue(t: Track?){
         val i = Intent(this@MainActivity, CreateCueActivity::class.java)
-        i.putExtra("track_name", t?.name)
+        i.putExtra("TRACK_NAME", t?.name)
+        i.putExtra("TRACK_URI", t?.uri)
+        i.putExtra("SPOTIFY_ACCESS_TOKEN", spotifyAccessToken)
         startActivity(i)
     }
 
