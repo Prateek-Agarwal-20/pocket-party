@@ -1,8 +1,11 @@
 package com.example.pocketparty
 
 import android.content.Intent
+import android.opengl.Visibility
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity;
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import com.example.pocketparty.auth.Authentication
 import com.example.pocketparty.auth.Authentication.AUTH_REQUEST_CODE
 import com.example.pocketparty.data.SpotifyAppRemoteSingleton
@@ -28,6 +31,9 @@ class LoginActivity : AppCompatActivity() {
 
         loginBtn.setOnClickListener {
             Authentication.connectToSpotify(this)
+            loginBtn.visibility = GONE
+            enterBtn.visibility = GONE
+            pbLoading.visibility = VISIBLE
         }
 
         enterBtn.setOnClickListener {
