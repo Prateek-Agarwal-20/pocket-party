@@ -59,24 +59,24 @@ class PlayProjectActivity : AppCompatActivity() {
 
             Log.i("TAG", "Pre-while")
             Log.i("TAG", "enabled: ${enabled}")
-            Log.i("TAG", "playing: ${mpProjectSong.isPlaying}")
-            Log.i("TAG", "duration: ${mpProjectSong.currentPosition < mpProjectSong.duration}")
+            Log.i("TAG", "playing: ${songIsPlaying()}")
+            Log.i("TAG", "duration: ${getSongCurrentPosition() < getSongDuration()}")
 
 
-            while (enabled && mpProjectSong.currentPosition < mpProjectSong.duration){
+            while (enabled && getSongCurrentPosition() < getSongDuration()){
 //                && sbProjectSeek.progress < sbProjectSeek.max) {
 
                 Log.i("REPEAT", "While loop entered")
 
-                if (!flashEngaged && mpProjectSong.currentPosition > currentCue.startTime) {
+                if (!flashEngaged && getSongCurrentPosition() > currentCue.startTime) {
                     cameraManager.setTorchMode(camId, true)
                     flashEngaged = true
                     Log.i("TAG", "flash engage attempted - ${currentCueIndex}")
-                    Log.i("TIMECHECK", "ON time: ${mpProjectSong.currentPosition}")
+                    Log.i("TIMECHECK", "ON time: ${getSongCurrentPosition()}")
                     Log.i("TIMECHECK", "ON startTime: ${currentCue.startTime}")
                     Log.i("TIMECHECK", "ON endTime: ${currentCue.endTime}")
                 }
-                if (mpProjectSong.currentPosition >= currentCue.endTime) {
+                if (getSongCurrentPosition() >= currentCue.endTime) {
                     cameraManager.setTorchMode(camId, false)
                     flashEngaged = false
                     currentCueIndex++
@@ -86,7 +86,7 @@ class PlayProjectActivity : AppCompatActivity() {
                         enabled = false
                         currentCueIndex--
                     }
-                    Log.i("TIMECHECK", "OFF time: ${mpProjectSong.currentPosition}")
+                    Log.i("TIMECHECK", "OFF time: ${getSongCurrentPosition()}")
                     Log.i("TIMECHECK", "OFF startTime: ${currentCue.startTime}")
                     Log.i("TIMECHECK", "OFF endTime: ${currentCue.endTime}")
                     Log.i("TAG", "flash disengage attempted - ${currentCueIndex}")
@@ -95,12 +95,51 @@ class PlayProjectActivity : AppCompatActivity() {
         }
     }
 
+    private fun setUpMediaPlayer(){
+        //Todo - prateek update for spotify
+        mpProjectSong = MediaPlayer.create(this, R.raw.willywonkaremix)
+    }
+
+    private fun playSong(){
+        //Todo - Prateek, update for spotify
+        mpProjectSong.start()
+    }
+
+    private fun pauseSong(){
+        //Todo - Prateek, update for spotyify
+        mpProjectSong.pause()
+    }
+
+    private fun stopSong(){
+        //Todo - Prateek, update for spotyify
+        mpProjectSong.stop()
+    }
+
+    private fun seekSongTo(progress: Int){
+        //Todo - Prateek, update for spotyify
+        mpProjectSong.seekTo(progress)
+    }
+
+    private fun songIsPlaying(): Boolean{
+        //Todo - Prateek, update for spotyify
+        return mpProjectSong.isPlaying
+    }
+
+    private fun getSongCurrentPosition(): Int{
+        //Todo - Prateek, update for spotyify
+        return mpProjectSong.currentPosition
+    }
+
+    private fun getSongDuration(): Int{
+        return mpProjectSong.duration
+    }
+
     private fun setup() {
         setUpFlashParams()
         lightingCues = intent.getParcelableArrayListExtra<LightingCueItem>(CreateCueActivity.LISTKEY)
         if (!lightingCues.isEmpty()) {
             Log.i("TAG", "recieved as: ${lightingCues}")
-            mpProjectSong = MediaPlayer.create(this, R.raw.willywonkaremix)
+            setUpMediaPlayer()
 //            setupProgressBar()
             setUpOnClicks()
         } else {
@@ -220,18 +259,18 @@ class PlayProjectActivity : AppCompatActivity() {
             playThread().start()
             firstTime = false
         }
-        if (mpProjectSong.isPlaying) {
-            mpProjectSong.pause()
+        if (songIsPlaying()) {
+            pauseSong()
             btnProjectPlay.setImageResource(R.drawable.ic_play_arrow_vec)
         } else {
-            mpProjectSong.start()
+            playSong()
             btnProjectPlay.setImageResource(R.drawable.ic_pause)
         }
     }
 
     fun leftProjectSeekClick() {
 //        sbProjectSeek.setProgress(0)
-        mpProjectSong.seekTo(0)
+        seekSongTo(0)
         currentCueIndex = 0
         currentCue = lightingCues.get(currentCueIndex)
         playThread().join()
@@ -242,7 +281,7 @@ class PlayProjectActivity : AppCompatActivity() {
     fun rightProjectSeekClick() {
 //        sbProjectSeek.setProgress(sbProjectSeek.max)
 //        mpProjectSong.seekTo(sbProjectSeek.max)
-        mpProjectSong.seekTo(mpProjectSong.duration)
+        seekSongTo(getSongDuration())
         currentCueIndex = lightingCues.size - 1
         currentCue = lightingCues.get(currentCueIndex)
     }
@@ -262,7 +301,7 @@ class PlayProjectActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        mpProjectSong.stop()
+        stopSong()
         projectPlayTimer.cancel()
     }
 }

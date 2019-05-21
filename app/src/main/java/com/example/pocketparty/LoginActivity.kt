@@ -2,6 +2,7 @@ package com.example.pocketparty
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity;
 import com.example.pocketparty.auth.Authentication
 import com.example.pocketparty.auth.Authentication.AUTH_REQUEST_CODE
@@ -27,6 +28,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.login_screen)
 
         loginBtn.setOnClickListener {
+            Snackbar.make(login_layout, "Hold tight! Logging into Spotify...", Snackbar.LENGTH_LONG)
             Authentication.connectToSpotify(this)
         }
 

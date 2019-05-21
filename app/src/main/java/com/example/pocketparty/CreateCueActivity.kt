@@ -49,6 +49,7 @@ class CreateCueActivity : AppCompatActivity() {
     private lateinit var spotifyAccessToken: String
     private var BASE_URL: String = "https://api.spotify.com/"
     private lateinit var spotifyAPI: SpotifyAPI
+    private var isPlaying: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +60,7 @@ class CreateCueActivity : AppCompatActivity() {
             track_name = i.getStringExtra("TRACK_NAME")
             track_uri = i.getStringExtra("TRACK_URI")
             spotifyAccessToken = i.getStringExtra("SPOTIFY_ACCESS_TOKEN")
+            mSpotifyAppRemote = SpotifyAppRemoteSingleton.spotifyAppRemote
         }
 
         doAnims()
@@ -88,11 +90,61 @@ class CreateCueActivity : AppCompatActivity() {
     private fun setup() {
         setUpFlashParams()
         setupFlashOntouch()
-        mpWillyWonka = MediaPlayer.create(this, R.raw.willywonkaremix)
+        setUpMediaPlayer()
         setupProgressBar()
 
         mSpotifyAppRemote = SpotifyAppRemoteSingleton.spotifyAppRemote
         setupNetworking()
+    }
+
+    private fun setUpMediaPlayer(){
+        //Todo - prateek update for spotify
+        mpWillyWonka = MediaPlayer.create(this, R.raw.willywonkaremix)
+    }
+
+    private fun playSong(){
+        //mpWillyWonka.start()
+        Log.i("PLAYCHECK", "check in play method: ${songIsPlaying()}")
+        Log.i("PLAYCHECK", "track uri: " + track_uri)
+
+//        val playCall = spotifyAPI.playFromSpotify()
+//        playCall.enqueue(object: Callback<PlayResponse> {
+//            override fun onFailure(call: Call<PlayResponse>, t: Throwable) {
+//                Log.d("PLAYERROR", t.message)
+//            }
+//
+//            override fun onResponse(call: Call<PlayResponse>, response: Response<PlayResponse>) {
+//                Log.d("PLAYED_SUCCESS", " WE DID IT")
+//            }
+//
+//        })
+        mSpotifyAppRemote!!.playerApi.resume()
+        isPlaying = true
+    }
+
+    private fun pauseSong(){
+        mSpotifyAppRemote!!.playerApi.pause()
+        isPlaying = false
+    }
+
+    private fun stopSong(){
+        mpWillyWonka.stop()
+        isPlaying = false
+    }
+
+    private fun seekSongTo(progress: Int){
+        //Todo - Prateek, update for spotyify
+        mpWillyWonka.seekTo(progress)
+    }
+
+    private fun songIsPlaying(): Boolean{
+//        return mpWillyWonka.isPlaying
+        return isPlaying
+    }
+
+    private fun getSongCurrentPosition(): Int{
+        //Todo - Prateek, update for spotyify
+        return mpWillyWonka.currentPosition
     }
 
     //Required parameters to operate the flashlight
@@ -109,14 +161,12 @@ class CreateCueActivity : AppCompatActivity() {
     }
 
     fun setupProgressBar() {
-        val duration = mpWillyWonka.duration
-        sbSongSeek.max = duration
-        updateAmount = duration / 100
-        musicTimer.scheduleAtFixedRate(musicTimerTask(), 0, updateAmount.toLong())
+        getSongDuration()
+        //musicTimer.scheduleAtFixedRate(musicTimerTask(), 0, updateAmount.toLong())
         setSeekListener()
     }
 
-    fun setupNetworking() {
+    private fun setupNetworking() {
         val httpClient = OkHttpClient.Builder();
         httpClient.addInterceptor(Interceptor { chain ->
             val original = chain.request()
@@ -139,25 +189,33 @@ class CreateCueActivity : AppCompatActivity() {
         spotifyAPI = retrofit.create(SpotifyAPI::class.java)
     }
 
+    private fun getSongDuration(){
+        //Todo - Prateek, update for spotify
+        val duration = mpWillyWonka.duration
+        sbSongSeek.max = duration
+        updateAmount = duration/100
+    }
+
     private fun setSeekListener() {
         sbSongSeek.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                mpWillyWonka.pause()
+                //Todo - Prateek, update for spotify
+                pauseSong()
                 btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
                 btnFlash.isEnabled = false
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                mpWillyWonka.seekTo(sbSongSeek.progress)
-
-                mpWillyWonka.start()
+                //Todo - Prateek, update for spotify
+                seekSongTo(sbSongSeek.progress)
+                playSong()
                 btnPlay.setImageResource(R.drawable.ic_pause)
                 btnFlash.isEnabled = true
 
-                if (mpWillyWonka.currentPosition < currentCue.startTime) {
+                if (getSongCurrentPosition() < currentCue.startTime) {
                     handleBackSeek()
                 }
             }
@@ -166,12 +224,12 @@ class CreateCueActivity : AppCompatActivity() {
     }
 
     private fun handleBackSeek() {
-        mpWillyWonka.pause()
+        pauseSong()
         setButtonAbility(false)
         Log.i("TAG", "back seek begin")
         Log.i("TAG", "first ${!lightingCues.get(currentCueIndex - 1).equals(null)}")
-        Log.i("TAG", "sceond ${lightingCues.get(currentCueIndex - 1).startTime > mpWillyWonka.currentPosition}")
-        while (currentCueIndex > 0 && lightingCues.get(currentCueIndex - 1).startTime > mpWillyWonka.currentPosition) {
+        Log.i("TAG", "sceond ${lightingCues.get(currentCueIndex - 1).startTime > getSongCurrentPosition()}")
+        while (currentCueIndex > 0 && lightingCues.get(currentCueIndex - 1).startTime > getSongCurrentPosition()) {
             currentCueIndex--
             Log.i("TAG", "cueindex on rewind: ${currentCueIndex}")
         }
@@ -192,7 +250,7 @@ class CreateCueActivity : AppCompatActivity() {
         Log.i("TAG", "cues deleted")
 
 
-        mpWillyWonka.start()
+        playSong()
         setButtonAbility(true)
     }
 
@@ -221,10 +279,10 @@ class CreateCueActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleFlashButtonDown() {
+     fun handleFlashButtonDown() {
         cameraManager.setTorchMode(camId, true)
         btnFlash.isPressed = true
-        lightingCues.add(LightingCueItem(mpWillyWonka.currentPosition, 0))
+        lightingCues.add(LightingCueItem(getSongCurrentPosition(), 0))
         currentCue = lightingCues.get(currentCueIndex)
         sbSongSeek.isEnabled = false
     }
@@ -232,59 +290,31 @@ class CreateCueActivity : AppCompatActivity() {
     private fun handleFlashButtonUp() {
         cameraManager.setTorchMode(camId, false)
         btnFlash.isPressed = false
-        currentCue.endTime = mpWillyWonka.currentPosition
+        currentCue.endTime = getSongCurrentPosition()
         sbSongSeek.isEnabled = true
         currentCueIndex++
         Log.i("TAG", "cueindex: ${currentCueIndex}")
     }
 
     fun playButtonClick(view: View) {
-//        if (mpWillyWonka.isPlaying) {
-//            mpWillyWonka.pause()
-//            btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
-//        } else {
-//            mpWillyWonka.start()
-//            btnPlay.setImageResource(R.drawable.ic_pause)
-//        }
-        Log.d("PLAY", "button clicked " + track_uri)
-
-        val currentDevices = spotifyAPI.getPlayerDevices()
-        currentDevices.enqueue(object: Callback<CurrentPlayerDevices> {
-            override fun onFailure(call: Call<CurrentPlayerDevices>, t: Throwable) {
-                Snackbar.make(create_base_layout, "Could not get current state", Snackbar.LENGTH_LONG).show()
-                Log.d("ERROR", t.message)
-            }
-
-            override fun onResponse(call: Call<CurrentPlayerDevices>, response: Response<CurrentPlayerDevices>) {
-                val res = response.body()
-                Log.d("URL", call.request().toString())
-                Log.d("SUCCESS", res.toString())
-            }
-        })
-
-        mSpotifyAppRemote!!.playerApi.subscribeToPlayerState().setEventCallback { ps ->
-                Log.d("PLAY", "inside callback " + ps.track.name)
-                if (ps.isPaused) {
-                    mSpotifyAppRemote!!.playerApi.play(track_uri)
-                    btnPlay.setImageResource(R.drawable.ic_pause)
-                    Log.d("PLAY", "is paused, playing now")
-                } else {
-                    btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
-                    mSpotifyAppRemote!!.playerApi.pause()
-                    Log.d("PLAY", "is playing, pausing now")
-                }
-            }
+        if (songIsPlaying()) {
+            pauseSong()
+            btnPlay.setImageResource(R.drawable.ic_play_arrow_vec)
+        } else {
+            playSong()
+            btnPlay.setImageResource(R.drawable.ic_pause)
+        }
     }
 
     fun leftSeekClick(view: View) {
         sbSongSeek.setProgress(0)
-        mpWillyWonka.seekTo(0)
+        seekSongTo(0)
         deleteAllCues()
     }
 
     fun rightSeekClick(view: View) {
         sbSongSeek.setProgress(sbSongSeek.max)
-        mpWillyWonka.seekTo(sbSongSeek.max)
+        seekSongTo(sbSongSeek.max)
     }
 
     fun doneButtonClick(view: View) {
@@ -303,7 +333,10 @@ class CreateCueActivity : AppCompatActivity() {
     inner class musicTimerTask : TimerTask() {
         override fun run() {
             runOnUiThread {
-                if (mpWillyWonka.isPlaying && sbSongSeek.progress < sbSongSeek.max) {
+                Log.i("AMOUNTCHECK", "seek prog = ${sbSongSeek.progress} / max: = ${sbSongSeek.max}")
+                Log.i("PLAYCHECK", "playing: ${songIsPlaying()}")
+                if (songIsPlaying() && sbSongSeek.progress < sbSongSeek.max) {
+                    Log.i("AMOUNTCHECK","updateAmount = ${updateAmount}")
                     sbSongSeek.progress += updateAmount
                 }
             }
@@ -314,6 +347,6 @@ class CreateCueActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         musicTimer.cancel()
-        mpWillyWonka.stop()
+        stopSong()
     }
 }
