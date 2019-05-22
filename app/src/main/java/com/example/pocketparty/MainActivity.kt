@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initRecyclerView() {
         Thread {
-            fstore = FireInterface(this, user!!.uid) // TODO change to correct userId user!!.uid
+            fstore = FireInterface(this, user!!.uid)
             fstore.getUserData()
             var cueList: List<LightingCue> = fstore.getAllLightingCues()
             Log.i("INIT RECYCLER", "got lighting cues: " + cueList.size)
@@ -141,9 +141,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(fbTestIntent)
             }
             R.id.nav_create -> {
-                val createCueIntent = Intent(this@MainActivity, CreateCueActivity::class.java)
-                createCueIntent.putExtra("userID", user!!.uid)
-                startActivity(createCueIntent)
+                val chooseSongIntent = Intent(this@MainActivity, ChooseSongActivity::class.java)
+                startActivity(chooseSongIntent)
             }
             R.id.nav_edit -> {
 

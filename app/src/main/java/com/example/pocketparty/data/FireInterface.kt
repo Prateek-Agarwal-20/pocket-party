@@ -91,18 +91,17 @@ class FireInterface {
     }
 
     // TODO: change cueList to a 2D array when supporting more than one phone
-    fun saveProject(cueName: String, trackName: String, artistName:String,
-                    numPhones: Int, cueArtistName: String, trackImageLink: String,
-                    spotifyUri: String, cueArtistImageLink: String, cueList: ArrayList<LightingCueItem>) {
-        var dataList = arrayListOf<Any>(cueName, trackName, artistName, trackImageLink, spotifyUri,
-                                                        cueArtistName, cueArtistImageLink, numPhones)
-        for (i in 0 until cueList.size) {
-            dataList.add(cueList.get(i).startTime)
-            dataList.add(cueList.get(i).endTime)
+    fun saveProject(cue: LightingCue) {
+
+        var dataList = arrayListOf<Any>(cue.cueName, cue.track.name, cue.track.artist, cue.track.imageLink,
+                                                        cue.track.spotifyUri, cue.cueArtistName, cue.cueArtistImage, cue.numPhones)
+        for (i in 0 until cue.cueList.size) {
+            dataList.add(cue.cueList[0].get(i).startTime)
+            dataList.add(cue.cueList[0].get(i).endTime)
         }
 
         val docData = HashMap<String, Any>()
-        docData[cueName] = dataList
+        docData[cue.cueName] = dataList
 
         userDataReference.set(docData, SetOptions.merge())
             .addOnSuccessListener { Log.i("updateTag", "success!") }

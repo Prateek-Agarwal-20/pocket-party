@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_choose_song"
+        tools:context=".ChooseSongActivity">
+
+    <Button
+            android:text="All The Way Up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/allTheWayUpBtn" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="70dp"/>
+    <Button
+            android:text="Coming Over"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/comingOverBtn"
+            app:layout_constraintTop_toBottomOf="@+id/allTheWayUpBtn"
+            app:layout_constraintEnd_toEndOf="@+id/allTheWayUpBtn"
+            app:layout_constraintStart_toStartOf="@+id/allTheWayUpBtn"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:text="Feel It Still"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/feelItStillBtn" app:layout_constraintEnd_toEndOf="@+id/comingOverBtn"
+            app:layout_constraintStart_toStartOf="@+id/comingOverBtn"
+            app:layout_constraintTop_toBottomOf="@+id/comingOverBtn"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:text="Fly Kicks"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/flyKicksBtn"
+            app:layout_constraintTop_toBottomOf="@+id/feelItStillBtn"
+            app:layout_constraintEnd_toEndOf="@+id/feelItStillBtn"
+            app:layout_constraintStart_toStartOf="@+id/feelItStillBtn" android:layout_marginTop="10dp"/>
+    <Button
+            android:text="Ignition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/ignitionBtn" app:layout_constraintEnd_toEndOf="@+id/flyKicksBtn"
+            app:layout_constraintStart_toStartOf="@+id/flyKicksBtn"
+            app:layout_constraintTop_toBottomOf="@+id/flyKicksBtn"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:text="Light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lightBtn" app:layout_constraintEnd_toEndOf="@+id/ignitionBtn"
+            app:layout_constraintStart_toStartOf="@+id/ignitionBtn"
+            app:layout_constraintTop_toBottomOf="@+id/ignitionBtn"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:text="Never Be Like You"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/neverBeLikeYouBtn" app:layout_constraintEnd_toEndOf="@+id/lightBtn"
+            app:layout_constraintStart_toStartOf="@+id/lightBtn" app:layout_constraintTop_toBottomOf="@+id/lightBtn"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:text="Turn Down For What"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/turnDownForWhatBtn" app:layout_constraintEnd_toEndOf="@+id/neverBeLikeYouBtn"
+            app:layout_constraintStart_toStartOf="@+id/neverBeLikeYouBtn"
+            app:layout_constraintTop_toBottomOf="@+id/neverBeLikeYouBtn"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:text="Willy Wonka Remix"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/willyWonkaRemixBtn" app:layout_constraintEnd_toEndOf="@+id/turnDownForWhatBtn"
+            app:layout_constraintStart_toStartOf="@+id/turnDownForWhatBtn"
+            app:layout_constraintTop_toBottomOf="@+id/turnDownForWhatBtn"
+            android:layout_marginTop="10dp"/>
+</android.support.constraint.ConstraintLayout>
