@@ -46,9 +46,8 @@ class CreateCueActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_cue)
 
-        //songChosen = intent.getIntExtra("SONG_ID", 0)
         trackChosen = intent.getParcelableExtra("TRACK_CHOSEN")
-        songChosen = getSongId(trackChosen.name)
+        songChosen = trackChosen.spotifyUri.toInt()
         user = FirebaseAuth.getInstance().currentUser!!
 
         doAnims()
@@ -128,21 +127,6 @@ class CreateCueActivity : AppCompatActivity() {
         btnFlash.setOnTouchListener { v, event ->
             flashLightClick(event)
             true
-        }
-    }
-
-    fun getSongId(trackName: String) : Int {
-        when(trackName) {
-            "All The Way Up" -> return R.raw.allthewayup
-            "Coming Over" -> return R.raw.comingover
-            "Feel It Still" -> return R.raw.fellitstill
-            "Fly Kicks" -> return R.raw.flykicks
-            "Ignition" -> return R.raw.ignition
-            "Light" -> return R.raw.light
-            "Never Be Like You" -> return R.raw.neverbelikeyou
-            "Turn Down For What" -> return R.raw.turndownforwhat
-            "Willy Wonka Remix" -> return R.raw.willywonkaremix
-            else -> return 0
         }
     }
 
