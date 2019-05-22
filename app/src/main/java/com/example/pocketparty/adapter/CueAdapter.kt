@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.pocketparty.CueDetail
 import com.example.pocketparty.MainActivity
+import com.example.pocketparty.PlayProjectActivity
 import com.example.pocketparty.R
 import com.example.pocketparty.data.LightingCue
 import com.squareup.picasso.Picasso
@@ -41,12 +42,14 @@ class CueAdapter: RecyclerView.Adapter<CueAdapter.ViewHolder> {
         viewHolder.trackName.text = item.track.name
         viewHolder.artistName.text = item.track.artist
         Picasso.get()
-            .load(item.track.imageLink)
+            //.load(item.track.imageLink)
+            .load("/")
             .placeholder(context.getDrawable(R.drawable.music_note))
             .error(context.getDrawable(R.drawable.music_note))
             .into(viewHolder.trackImage)
         Picasso.get()
-            .load(item.cueArtistImage)
+            //.load(item.cueArtistImage)
+            .load("/")
             .placeholder(context.getDrawable(R.drawable.default_user))
             .error(context.getDrawable(R.drawable.default_user))
             .into(viewHolder.cueArtistImage)
@@ -55,7 +58,7 @@ class CueAdapter: RecyclerView.Adapter<CueAdapter.ViewHolder> {
         viewHolder.cueName.text = item.cueName
 
         viewHolder.cardView.setOnClickListener {
-            var i = Intent(context as MainActivity, CueDetail::class.java)
+            var i = Intent(context as MainActivity, PlayProjectActivity::class.java)
             i.putExtra("LIGHTING_CUE", item )
             context.startActivity(i)
         }

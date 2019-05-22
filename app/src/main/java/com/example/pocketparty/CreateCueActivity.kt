@@ -13,10 +13,7 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
-import com.example.pocketparty.data.FireInterface
-import com.example.pocketparty.data.LightingCue
-import com.example.pocketparty.data.LightingCueItem
-import com.example.pocketparty.data.Track
+import com.example.pocketparty.data.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_create_cue.*
@@ -281,16 +278,22 @@ class CreateCueActivity : AppCompatActivity() {
     }
 
     fun saveButtonClick(view: View) {
-        val cueName = view.cueName.text.toString()
-        val cueArtistName = user.displayName
+        val cueName = cueName.text.toString()
+        val cueArtistName = user.uid
         var cues = ArrayList<List<LightingCueItem>>()
         cues.add(lightingCues)
+        Log.i("CREATE", "${cueName}")
+        Log.i("CREATE", "${trackChosen}")
+        Log.i("CREATE", "${cueArtistName}")
+        Log.i("CREATE", "${cues}")
         val cue = LightingCue(cueName, trackChosen, cueArtistName!!,
                         "", 1, cues)
 
-        FireInterface(this, user!!.uid).saveProject(cue)
 
-        Intent(this@CreateCueActivity, MainActivity::class.java)
+        FirestoreSingleton.fstore!!.saveProject(cue)
+        FirestoreSingleton.fstore!!.getUserData()
+
+        startActivity(Intent(this@CreateCueActivity, MainActivity::class.java))
     }
 
     private fun deleteAllCues() {

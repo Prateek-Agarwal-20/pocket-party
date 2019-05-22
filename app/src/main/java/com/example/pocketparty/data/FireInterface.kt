@@ -34,6 +34,7 @@ class FireInterface {
     }
 
     private fun parseRecievedData() {
+        namesList.clear()
         val totalList = doc.data
         totalList?.forEach { (key, value) ->
             namesList.add(key)
@@ -95,7 +96,10 @@ class FireInterface {
 
         var dataList = arrayListOf<Any>(cue.cueName, cue.track.name, cue.track.artist, cue.track.imageLink,
                                                         cue.track.spotifyUri, cue.cueArtistName, cue.cueArtistImage, cue.numPhones)
-        for (i in 0 until cue.cueList.size) {
+
+        Log.i("CUE LIST", "${cue.cueList}")
+
+        for (i in 0 until cue.cueList[0].size) {
             dataList.add(cue.cueList[0].get(i).startTime)
             dataList.add(cue.cueList[0].get(i).endTime)
         }

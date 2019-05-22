@@ -16,6 +16,7 @@ import android.view.MenuItem
 import android.view.View
 import com.example.pocketparty.adapter.CueAdapter
 import com.example.pocketparty.data.FireInterface
+import com.example.pocketparty.data.FirestoreSingleton
 import com.example.pocketparty.data.LightingCue
 import com.example.pocketparty.data.SpotifyAppRemoteSingleton
 import com.example.pocketparty.image.CircleTransform
@@ -38,7 +39,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var user: FirebaseUser? = null
     private lateinit var auth: FirebaseAuth
     private lateinit var profile_image_url: String
-    private lateinit var fstore: FireInterface
 
     lateinit var cueAdapter: CueAdapter
 
@@ -55,7 +55,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val i = getIntent()
         if(intent.extras != null) {
-            user = i.getParcelableExtra("FIREBASE_USER")
+            if(FirestoreSingleton.user == null) {
+                FirestoreSingleton.user = i.getParcelableExtra("FIREBASE_USER")
+            }
             spotifyAccessToken = i.getStringExtra("SPOTIFY_ACCESS_TOKEN")
             mSpotifyAppRemote = SpotifyAppRemoteSingleton.spotifyAppRemote
             profile_image_url = i.getStringExtra("SPOTIFY_USER_IMG")
@@ -80,14 +82,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
+        FirestoreSingleton.fstore = FireInterface(this, FirestoreSingleton.user!!.uid)
         initRecyclerView()
     }
 
     private fun initRecyclerView() {
         Thread {
-            fstore = FireInterface(this, user!!.uid)
-            fstore.getUserData()
-            var cueList: List<LightingCue> = fstore.getAllLightingCues()
+            FirestoreSingleton.fstore!!.getUserData()
+            var cueList: List<LightingCue> = FirestoreSingleton.fstore!!.getAllLightingCues()
             Log.i("INIT RECYCLER", "got lighting cues: " + cueList.size)
             runOnUiThread {
                 cueAdapter = CueAdapter(this, cueList)
@@ -98,6 +100,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 recyclerCues.addItemDecoration(itemDecoration)
             }
         }.start()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onStop() {

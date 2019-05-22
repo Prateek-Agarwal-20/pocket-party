@@ -19,47 +19,47 @@ class ChooseSongActivity : AppCompatActivity() {
         val i = Intent(this@ChooseSongActivity, CreateCueActivity::class.java)
 
         allTheWayUpBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(allTheWayUpBtn.text.toString(), "Fat Joe", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(allTheWayUpBtn.text.toString(), "Fat Joe", "", R.raw.allthewayup.toString()))
             startActivity(i)
         }
 
         comingOverBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(comingOverBtn.text.toString(), "Dillon Francis", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(comingOverBtn.text.toString(), "Dillon Francis", "", R.raw.comingover.toString()))
             startActivity(i)
         }
 
         feelItStillBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(feelItStillBtn.text.toString(), "Portugal. The Man", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(feelItStillBtn.text.toString(), "Portugal. The Man", "", R.raw.fellitstill.toString()))
             startActivity(i)
         }
 
         flyKicksBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(flyKicksBtn.text.toString(), "AC Slater", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(flyKicksBtn.text.toString(), "AC Slater", "", R.raw.flykicks.toString()))
             startActivity(i)
         }
 
         ignitionBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(ignitionBtn.text.toString(), "R Kelly", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(ignitionBtn.text.toString(), "R Kelly", "", R.raw.ignition.toString()))
             startActivity(i)
         }
 
         lightBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(lightBtn.text.toString(), "San Holo", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(lightBtn.text.toString(), "San Holo", "", R.raw.light.toString()))
             startActivity(i)
         }
 
         neverBeLikeYouBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(neverBeLikeYouBtn.text.toString(), "Flume", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(neverBeLikeYouBtn.text.toString(), "Flume", "", R.raw.neverbelikeyou.toString()))
             startActivity(i)
         }
 
         turnDownForWhatBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(turnDownForWhatBtn.text.toString(), "DJ Snake", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(turnDownForWhatBtn.text.toString(), "DJ Snake", "", R.raw.turndownforwhat.toString()))
             startActivity(i)
         }
 
         willyWonkaRemixBtn.setOnClickListener { view ->
-            i.putExtra("TRACK_CHOSEN", Track(willyWonkaRemixBtn.text.toString(), "Dotan Negrin", "", ""))
+            i.putExtra("TRACK_CHOSEN", Track(willyWonkaRemixBtn.text.toString(), "Dotan Negrin", "", R.raw.willywonkaremix.toString()))
             startActivity(i)
         }
     }
