@@ -37,6 +37,8 @@ class PlayProjectActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_project)
 
+        cue = intent.getParcelableExtra<LightingCue>("LIGHTING_CUE")
+
         doAnims()
         setup()
     }
@@ -138,7 +140,6 @@ class PlayProjectActivity : AppCompatActivity() {
 
     private fun setup() {
         setUpFlashParams()
-        cue = intent.getParcelableExtra<LightingCue>("LIGHTING_CUE")
         lightingCues = cue.cueList[0] as ArrayList<LightingCueItem>
         if (!lightingCues.isEmpty()) {
             Log.i("TAG", "recieved as: ${lightingCues}")
