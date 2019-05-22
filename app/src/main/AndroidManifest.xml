@@ -15,6 +15,11 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
+                android:name=".ChooseSongActivity"
+                android:label="@string/title_activity_choose_song"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
                 android:name=".CueDetail"
                 android:label="@string/title_activity_cue_detail"
                 android:theme="@style/AppTheme.NoActionBar">

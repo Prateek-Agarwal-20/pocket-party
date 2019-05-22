@@ -133,14 +133,14 @@ class CreateCueActivity : AppCompatActivity() {
 
     fun getSongId(trackName: String) : Int {
         when(trackName) {
-            "All The Way Up" -> return R.raw.AllTheWayUp
-            "Coming Over" -> return R.raw.ComingOver
+            "All The Way Up" -> return R.raw.allthewayup
+            "Coming Over" -> return R.raw.comingover
             "Feel It Still" -> return R.raw.fellitstill
-            "Fly Kicks" -> return R.raw.FlyKicks
-            "Ignition" -> return R.raw.Ignition
-            "Light" -> return R.raw.Light
-            "Never Be Like You" -> return R.raw.NeverBeLikeYou
-            "Turn Down For What" -> return R.raw.TurnDownForWhat
+            "Fly Kicks" -> return R.raw.flykicks
+            "Ignition" -> return R.raw.ignition
+            "Light" -> return R.raw.light
+            "Never Be Like You" -> return R.raw.neverbelikeyou
+            "Turn Down For What" -> return R.raw.turndownforwhat
             "Willy Wonka Remix" -> return R.raw.willywonkaremix
             else -> return 0
         }

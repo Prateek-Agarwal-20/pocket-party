@@ -141,9 +141,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivity(fbTestIntent)
             }
             R.id.nav_create -> {
-                val createCueIntent = Intent(this@MainActivity, CreateCueActivity::class.java)
-                createCueIntent.putExtra("userID", user!!.uid)
-                startActivity(createCueIntent)
+                val chooseSongIntent = Intent(this@MainActivity, ChooseSongActivity::class.java)
+                startActivity(chooseSongIntent)
             }
             R.id.nav_edit -> {
 
