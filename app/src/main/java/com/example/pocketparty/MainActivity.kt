@@ -85,7 +85,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initRecyclerView() {
         Thread {
-            fstore = FireInterface(this, user!!.uid) // TODO change to correct userId user!!.uid
+            fstore = FireInterface(this, user!!.uid)
             fstore.getUserData()
             var cueList: List<LightingCue> = fstore.getAllLightingCues()
             Log.i("INIT RECYCLER", "got lighting cues: " + cueList.size)

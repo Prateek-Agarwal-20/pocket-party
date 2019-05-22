@@ -10,14 +10,13 @@
 
     <Button
             android:id="@+id/btnFinishCreation"
-            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_width="80dp" android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:background="@drawable/donebutton_oval"
             android:layout_margin="10dp"
-            android:text="Done!"
-            android:onClick="doneButtonClick"/>
+            android:text="Save"
+            android:onClick="saveButtonClick"/>
 
     <Button
             android:id="@+id/btnFlash"
@@ -75,5 +74,15 @@
             app:layout_constraintLeft_toRightOf="@id/btnPlay"
             app:layout_constraintTop_toTopOf="@id/btnPlay"
             android:onClick="rightSeekClick"/>
+    <EditText
+            android:hint="Cue Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/cueName" android:textColor="@android:color/white"
+            android:textSize="24sp" app:layout_constraintEnd_toStartOf="@+id/btnFinishCreation"
+            app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="@+id/btnFinishCreation"
+            app:layout_constraintBottom_toBottomOf="@+id/btnFinishCreation" android:singleLine="false"
+            android:selectAllOnFocus="false" android:text="Cue name here..."
+            android:backgroundTint="@android:color/holo_red_light"/>
 
 </android.support.constraint.ConstraintLayout>

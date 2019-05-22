@@ -10,13 +10,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
+import com.example.pocketparty.data.FireInterface
+import com.example.pocketparty.data.LightingCue
 import com.example.pocketparty.data.LightingCueItem
+import com.example.pocketparty.data.Track
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_create_cue.*
+import kotlinx.android.synthetic.main.list_single_cue.view.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class CreateCueActivity : AppCompatActivity() {
 
@@ -26,16 +32,24 @@ class CreateCueActivity : AppCompatActivity() {
 
     private lateinit var cameraManager: CameraManager
     private lateinit var camId: String
-    private lateinit var mpWillyWonka: MediaPlayer
+    private lateinit var mediaPlayer: MediaPlayer
     private var updateAmount = 0
     private val lightingCues = ArrayList<LightingCueItem>()
     private val musicTimer = Timer()
     private var currentCueIndex = 0
     private var currentCue = LightingCueItem(0, 0)
+    private var songChosen: Int = 0
+    private lateinit var trackChosen: Track
+    private lateinit var user: FirebaseUser
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_cue)
+
+        //songChosen = intent.getIntExtra("SONG_ID", 0)
+        trackChosen = intent.getParcelableExtra("TRACK_CHOSEN")
+        songChosen = getSongId(trackChosen.name)
+        user = FirebaseAuth.getInstance().currentUser!!
 
         doAnims()
         setup()
@@ -70,38 +84,38 @@ class CreateCueActivity : AppCompatActivity() {
 
     private fun setUpMediaPlayer(){
         //Todo - prateek update for spotify
-        mpWillyWonka = MediaPlayer.create(this, R.raw.willywonkaremix)
+        mediaPlayer = MediaPlayer.create(this, songChosen)
     }
 
     private fun playSong(){
         //Todo - Prateek, update for spotify
-        mpWillyWonka.start()
-        Log.i("PLAYCHECK", "check in play method: ${mpWillyWonka.isPlaying}")
+        mediaPlayer.start()
+        Log.i("PLAYCHECK", "check in play method: ${mediaPlayer.isPlaying}")
     }
 
     private fun pauseSong(){
         //Todo - Prateek, update for spotyify
-        mpWillyWonka.pause()
+        mediaPlayer.pause()
     }
 
     private fun stopSong(){
         //Todo - Prateek, update for spotyify
-        mpWillyWonka.stop()
+        mediaPlayer.stop()
     }
 
     private fun seekSongTo(progress: Int){
         //Todo - Prateek, update for spotyify
-        mpWillyWonka.seekTo(progress)
+        mediaPlayer.seekTo(progress)
     }
 
     private fun songIsPlaying(): Boolean{
         //Todo - Prateek, update for spotyify
-        return mpWillyWonka.isPlaying
+        return mediaPlayer.isPlaying
     }
 
     private fun getSongCurrentPosition(): Int{
         //Todo - Prateek, update for spotyify
-        return mpWillyWonka.currentPosition
+        return mediaPlayer.currentPosition
     }
 
     //Required parameters to operate the flashlight
@@ -117,6 +131,21 @@ class CreateCueActivity : AppCompatActivity() {
         }
     }
 
+    fun getSongId(trackName: String) : Int {
+        when(trackName) {
+            "All The Way Up" -> return R.raw.AllTheWayUp
+            "Coming Over" -> return R.raw.ComingOver
+            "Feel It Still" -> return R.raw.fellitstill
+            "Fly Kicks" -> return R.raw.FlyKicks
+            "Ignition" -> return R.raw.Ignition
+            "Light" -> return R.raw.Light
+            "Never Be Like You" -> return R.raw.NeverBeLikeYou
+            "Turn Down For What" -> return R.raw.TurnDownForWhat
+            "Willy Wonka Remix" -> return R.raw.willywonkaremix
+            else -> return 0
+        }
+    }
+
     fun setupProgressBar() {
         getSongDuration()
         musicTimer.scheduleAtFixedRate(musicTimerTask(), 0, updateAmount.toLong())
@@ -125,7 +154,7 @@ class CreateCueActivity : AppCompatActivity() {
 
     private fun getSongDuration(){
         //Todo - Prateek, update for spotify
-        val duration = mpWillyWonka.duration
+        val duration = mediaPlayer.duration
         sbSongSeek.max = duration
         updateAmount = duration/100
     }
@@ -251,12 +280,17 @@ class CreateCueActivity : AppCompatActivity() {
         seekSongTo(sbSongSeek.max)
     }
 
-    fun doneButtonClick(view: View) {
-        val playIntent = Intent(this@CreateCueActivity, PlayProjectActivity::class.java)
+    fun saveButtonClick(view: View) {
+        val cueName = view.cueName.text.toString()
+        val cueArtistName = user.displayName
+        var cues = ArrayList<List<LightingCueItem>>()
+        cues.add(lightingCues)
+        val cue = LightingCue(cueName, trackChosen, cueArtistName!!,
+                        "", 1, cues)
 
-        playIntent.putParcelableArrayListExtra(LISTKEY, lightingCues)
+        FireInterface(this, user!!.uid).saveProject(cue)
 
-        startActivity(playIntent)
+        Intent(this@CreateCueActivity, MainActivity::class.java)
     }
 
     private fun deleteAllCues() {
