@@ -12,6 +12,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.SeekBar
 import android.widget.Toast
+import com.example.pocketparty.data.LightingCue
 import com.example.pocketparty.data.LightingCueItem
 import kotlinx.android.synthetic.main.activity_create_cue.*
 import kotlinx.android.synthetic.main.activity_play_project.*
@@ -30,11 +31,14 @@ class PlayProjectActivity : AppCompatActivity() {
     private var flashEngaged = false
     private var firstTime = true
     private var enabled = false
+    private lateinit var cue: LightingCue
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_play_project)
+
+        cue = intent.getParcelableExtra<LightingCue>("LIGHTING_CUE")
 
         doAnims()
         setup()
@@ -97,7 +101,7 @@ class PlayProjectActivity : AppCompatActivity() {
 
     private fun setUpMediaPlayer(){
         //Todo - prateek update for spotify
-        mpProjectSong = MediaPlayer.create(this, R.raw.willywonkaremix)
+        mpProjectSong = MediaPlayer.create(this, cue.track.spotifyUri.toInt())
     }
 
     private fun playSong(){
@@ -136,7 +140,7 @@ class PlayProjectActivity : AppCompatActivity() {
 
     private fun setup() {
         setUpFlashParams()
-        lightingCues = intent.getParcelableArrayListExtra<LightingCueItem>(CreateCueActivity.LISTKEY)
+        lightingCues = cue.cueList[0] as ArrayList<LightingCueItem>
         if (!lightingCues.isEmpty()) {
             Log.i("TAG", "recieved as: ${lightingCues}")
             setUpMediaPlayer()
